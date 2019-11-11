@@ -13,6 +13,7 @@ public class ApiGatewayResponse {
     public ApiGatewayResponse() {
         this.statusCode = 200;
         this.headers = new TreeMap<String, String>();
+        this.headers.put("Access-Control-Allow-Origin", "*");
     }
 
     public int getStatusCode() {
