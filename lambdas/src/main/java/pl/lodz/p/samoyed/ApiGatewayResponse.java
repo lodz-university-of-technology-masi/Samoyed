@@ -6,7 +6,7 @@ import java.util.TreeMap;
 public class ApiGatewayResponse {
 
     public int statusCode;
-    public String body;
+    public String body = "";
     public Map<String, String> headers;
     public final boolean isBase64Encoded = false;
 
