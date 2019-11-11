@@ -11,6 +11,10 @@ public class Question {
     private String content;
     private String answers;
 
+    public Question()
+    {
+    }
+
     public Question(String type, String lang, String contents, String answers) {
         this.type = type;
         this.lang = lang;

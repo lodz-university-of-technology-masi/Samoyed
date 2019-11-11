@@ -11,6 +11,7 @@ public class ApiGatewayResponse {
     public final boolean isBase64Encoded = false;
 
     public ApiGatewayResponse() {
+        this.body = "";
         this.statusCode = 200;
         this.headers = new TreeMap<String, String>();
         this.headers.put("Access-Control-Allow-Origin", "*");

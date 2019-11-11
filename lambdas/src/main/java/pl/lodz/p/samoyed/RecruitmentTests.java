@@ -4,9 +4,10 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Question;
 import pl.lodz.p.samoyed.model.Test;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,13 +15,13 @@ import java.util.Map;
 
 public class RecruitmentTests {
 
-    private ApiGatewayResponse response = new ApiGatewayResponse();
     private AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
     private DynamoDBMapper mapper = new DynamoDBMapper(client);
+    private ObjectMapper om = new ObjectMapper();
 
     public ApiGatewayResponse add(Map<String, Object> input, Context context) {
 
-        response.body = "";
+        ApiGatewayResponse response = new ApiGatewayResponse();
 
         Map<String, String> queryParams = (LinkedHashMap<String, String>) input.get("queryStringParameters");
 
@@ -35,6 +36,7 @@ public class RecruitmentTests {
         test.setQuestions(questions);
         mapper.save(test);
 
+        response.statusCode = 201;
         response.headers.put("Content-type", "text/html");
         return response;
 
@@ -42,10 +44,19 @@ public class RecruitmentTests {
 
     public ApiGatewayResponse fetch(Map<String, Object> input, Context context) {
 
-        Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
-        response.body = pathParameters.toString();
-        response.headers.put("Content-type", "text/html");
-        return response;
+        ApiGatewayResponse response = new ApiGatewayResponse();
+
+        try {
+            Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
+            String testId = (String) pathParameters.get("id");
+            Test test = mapper.load(Test.class, testId);
+            response.body = om.writeValueAsString(test);
+            response.headers.put("Content-type", "text/html");
+            return response;
+        } catch (JsonProcessingException ex) {
+            response.body = ex.getMessage();
+            return response;
+        }
 
     }
 
