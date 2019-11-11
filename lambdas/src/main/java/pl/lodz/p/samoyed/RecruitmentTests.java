@@ -42,8 +42,9 @@ public class RecruitmentTests {
 
     public ApiGatewayResponse fetch(Map<String, Object> input, Context context) {
 
-        response.body = "";
-        response.statusCode = 404;
+        Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
+        response.body = pathParameters.toString();
+        response.headers.put("Content-type", "text/html");
         return response;
 
     }
