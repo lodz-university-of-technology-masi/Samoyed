@@ -3,15 +3,15 @@ package pl.lodz.p.samoyed;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Question;
 import pl.lodz.p.samoyed.model.Test;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class RecruitmentTests {
 
@@ -51,7 +51,26 @@ public class RecruitmentTests {
             String testId = (String) pathParameters.get("id");
             Test test = mapper.load(Test.class, testId);
             response.body = om.writeValueAsString(test);
-            response.headers.put("Content-type", "text/html");
+            response.headers.put("Content-type", "application/json");
+            return response;
+        } catch (JsonProcessingException ex) {
+            response.body = ex.getMessage();
+            return response;
+        }
+
+    }
+
+    public ApiGatewayResponse fetchAll(Map<String, Object> input, Context context) {
+
+        ApiGatewayResponse response = new ApiGatewayResponse();
+
+        try {
+            om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            DynamoDBScanExpression exp = new DynamoDBScanExpression();
+            exp.setProjectionExpression("Id,Title");
+            List<Test> test = mapper.scan(Test.class, exp);
+            response.body = om.writeValueAsString(test);
+            response.headers.put("Content-type", "application/json");
             return response;
         } catch (JsonProcessingException ex) {
             response.body = ex.getMessage();
