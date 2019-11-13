@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Navbar, NavItem, Nav} from "react-bootstrap";
+import { Navbar, NavItem, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import "./App.css";
 import Routes from './routes/Routes';
@@ -37,7 +37,9 @@ function App(props) {
         </Navbar.Collapse>
         </div> 
       </Navbar>
-      <Routes />
+      <div className="container">
+        <Routes />
+      </div>
     </>
   );
 }

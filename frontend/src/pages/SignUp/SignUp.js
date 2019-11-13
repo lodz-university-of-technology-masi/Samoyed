@@ -17,7 +17,7 @@ export default function SignUp() {
                 </form>
 
                 <div id="formFooter">
-                <a class="underlineHover" href="#">Zapomniałeś hasła?</a>
+                <a class="underlineHover" href="/">Zapomniałeś hasła?</a>
                 </div>
 
             </div>
