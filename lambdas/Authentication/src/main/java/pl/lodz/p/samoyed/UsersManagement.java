@@ -5,6 +5,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
+import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupRequest;
+import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupResult;
 import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpRequest;
 import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpResult;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
@@ -19,22 +21,10 @@ import pl.lodz.p.samoyed.model.Tokens;
 
 import java.util.Map;
 
-public class UserAuthenticate {
+public class UsersManagement {
 
     private ObjectMapper om = new ObjectMapper();
-    private CongitoConfig cognitoConfig = new CongitoConfig();
-
-    private AWSCognitoIdentityProvider obtainCognitoIdentityProvider() {
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(
-                cognitoConfig.getAwsAccessKey(),
-                cognitoConfig.getAwsSecretKey()
-        );
-        return AWSCognitoIdentityProviderClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                .withRegion(Regions.US_EAST_1)
-                .build();
-    }
+    private CognitoConfig cognitoConfig = new CognitoConfig();
 
     public ApiGatewayResponse signIn(Map<String, Object> input, Context context) {
 
@@ -84,11 +74,38 @@ public class UserAuthenticate {
 
             SignUpResult signUpResult = cognitoIdentityProvider.signUp(signUpRequest);
             AdminConfirmSignUpResult confirmResult = confirmSignUp(credentials.getUsername());
+            AdminAddUserToGroupResult gaddResult = addUserToGroup(
+                    credentials.getUsername(), "candidates");
         } catch (Exception ex) {
             res.setError(500, ex);
         }
 
         return res;
+    }
+
+    private AdminAddUserToGroupResult addUserToGroup(String username, String group) {
+
+        AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+
+        AdminAddUserToGroupRequest gaddRequest = new AdminAddUserToGroupRequest();
+        gaddRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+        gaddRequest.setUsername(username);
+        gaddRequest.setGroupName(group);
+
+        return cognitoIdentityProvider.adminAddUserToGroup(gaddRequest);
+
+    }
+
+    private AWSCognitoIdentityProvider obtainCognitoIdentityProvider() {
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(
+                cognitoConfig.getAwsAccessKey(),
+                cognitoConfig.getAwsSecretKey()
+        );
+        return AWSCognitoIdentityProviderClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .withRegion(Regions.US_EAST_1)
+                .build();
     }
 
     private AdminConfirmSignUpResult confirmSignUp(String username) {

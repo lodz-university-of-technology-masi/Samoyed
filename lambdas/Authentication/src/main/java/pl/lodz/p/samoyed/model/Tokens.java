@@ -2,9 +2,9 @@ package pl.lodz.p.samoyed.model;
 
 public class Tokens {
 
-    private String accessToken;
-    private String idToken;
-    private String refreshToken;
+    private String accessToken = "";
+    private String idToken = "";
+    private String refreshToken = "";
 
     public String getAccessToken() {
         return accessToken;

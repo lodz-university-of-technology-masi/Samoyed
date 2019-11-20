@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class CongitoConfig {
+public class CognitoConfig {
 
     private String awsAccessKey = "";
     private String awsSecretKey = "";
     private String clientId = "";
     private String userPoolId = "";
 
-    public CongitoConfig() {
+    public CognitoConfig() {
         try {
             Properties props = new Properties();
             InputStream input = getClass().getClassLoader().getResourceAsStream("cognito.properties");
