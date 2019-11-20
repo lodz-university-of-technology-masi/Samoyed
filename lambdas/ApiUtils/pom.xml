@@ -10,20 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>RecruitmentTests</artifactId>
+    <artifactId>ApiUtils</artifactId>
     <packaging>jar</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>pl.lodz.p.samoyed</groupId>
-            <artifactId>ApiUtils</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.11.595</version>
-        </dependency>
-    </dependencies>
 
 </project>

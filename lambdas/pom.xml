@@ -10,8 +10,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>RecruitmentTests</module>
+        <module>ApiUtils</module>
         <module>Authentication</module>
+        <module>RecruitmentTests</module>
     </modules>
 
     <dependencies>

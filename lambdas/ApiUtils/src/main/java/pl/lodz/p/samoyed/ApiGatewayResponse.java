@@ -5,15 +5,12 @@ import java.util.TreeMap;
 
 public class ApiGatewayResponse {
 
-    public int statusCode;
+    public int statusCode = 200;
     public String body = "";
-    public Map<String, String> headers;
-    public final boolean isBase64Encoded = false;
+    public Map<String, String> headers = new TreeMap<String, String>();
+    private final boolean isBase64Encoded = false;
 
     public ApiGatewayResponse() {
-        this.body = "";
-        this.statusCode = 200;
-        this.headers = new TreeMap<String, String>();
         this.headers.put("Access-Control-Allow-Origin", "*");
     }
 
