@@ -5,75 +5,100 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.*;
+import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpRequest;
+import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpResult;
+import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
+import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.AuthFlowType;
+import com.amazonaws.services.cognitoidp.model.SignUpRequest;
+import com.amazonaws.services.cognitoidp.model.SignUpResult;
 import com.amazonaws.services.lambda.runtime.Context;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import pl.lodz.p.samoyed.model.Credentials;
+import pl.lodz.p.samoyed.model.Tokens;
 
 import java.util.Map;
 
 public class UserAuthenticate {
 
-    private class Tokens {
-
-        String accessToken;
-        String idToken;
-        String refreshToken;
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public String getIdToken() {
-            return idToken;
-        }
-
-        public String getRefreshToken() {
-            return refreshToken;
-        }
-
-    }
-
     private ObjectMapper om = new ObjectMapper();
-    private CongitoConfig congitoConfig = new CongitoConfig();
+    private CongitoConfig cognitoConfig = new CongitoConfig();
 
-    public ApiGatewayResponse login(Map<String, Object> input, Context context) {
-
-        ApiGatewayResponse res = new ApiGatewayResponse();
-
+    private AWSCognitoIdentityProvider obtainCognitoIdentityProvider() {
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(
-                congitoConfig.getAwsAccessKey(),
-                congitoConfig.getAwsSecretKey()
+                cognitoConfig.getAwsAccessKey(),
+                cognitoConfig.getAwsSecretKey()
         );
-        AWSCognitoIdentityProvider cognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder
+        return AWSCognitoIdentityProviderClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                 .withRegion(Regions.US_EAST_1)
                 .build();
+    }
 
-        AdminInitiateAuthRequest initiateAuthRequest = new AdminInitiateAuthRequest();
-        initiateAuthRequest.setAuthFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH);
-        initiateAuthRequest.setClientId(congitoConfig.getClientId());
-        initiateAuthRequest.setUserPoolId(congitoConfig.getUserPoolId());
-        initiateAuthRequest.addAuthParametersEntry("USERNAME", "m.dlubakowski@gmail.com");
-        initiateAuthRequest.addAuthParametersEntry("PASSWORD", "Asd123Qwe");
-        AdminInitiateAuthResult initiateAuthResult =
-                cognitoIdentityProvider.adminInitiateAuth(initiateAuthRequest);
+    public ApiGatewayResponse signIn(Map<String, Object> input, Context context) {
 
-        Tokens tokens = new Tokens();
-        tokens.accessToken = initiateAuthResult.getAuthenticationResult().getAccessToken();
-        tokens.idToken = initiateAuthResult.getAuthenticationResult().getIdToken();
-        tokens.refreshToken = initiateAuthResult.getAuthenticationResult().getRefreshToken();
+        ApiGatewayResponse res = new ApiGatewayResponse();
 
         try {
+            AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+            String body = (String) input.get("body");
+            Credentials credentials = om.readValue(body, Credentials.class);
+
+            AdminInitiateAuthRequest initiateAuthRequest = new AdminInitiateAuthRequest();
+            initiateAuthRequest.setAuthFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH);
+            initiateAuthRequest.setClientId(cognitoConfig.getClientId());
+            initiateAuthRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+            initiateAuthRequest.addAuthParametersEntry("USERNAME", credentials.getUsername());
+            initiateAuthRequest.addAuthParametersEntry("PASSWORD", credentials.getPassword());
+            AdminInitiateAuthResult initiateAuthResult =
+                    cognitoIdentityProvider.adminInitiateAuth(initiateAuthRequest);
+
+            Tokens tokens = new Tokens();
+            tokens.setAccessToken(initiateAuthResult.getAuthenticationResult().getAccessToken());
+            tokens.setIdToken(initiateAuthResult.getAuthenticationResult().getIdToken());
+            tokens.setRefreshToken(initiateAuthResult.getAuthenticationResult().getRefreshToken());
+
             res.body = om.writeValueAsString(tokens);
-        } catch (JsonProcessingException ex) {
-            res.statusCode = 500;
-            res.body = "{\"error\":\"" + ex.getMessage() + "\"}";
+        } catch (Exception ex) {
+            res.setError(500, ex);
         }
 
         return res;
 
+    }
+
+    public ApiGatewayResponse signUp(Map<String, Object> input, Context context) {
+
+        ApiGatewayResponse res = new ApiGatewayResponse();
+
+        try {
+            AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+            String body = (String) input.get("body");
+            Credentials credentials = om.readValue(body, Credentials.class);
+
+            SignUpRequest signUpRequest = new SignUpRequest();
+            signUpRequest.setClientId(cognitoConfig.getClientId());
+            signUpRequest.setUsername(credentials.getUsername());
+            signUpRequest.setPassword(credentials.getPassword());
+
+            SignUpResult signUpResult = cognitoIdentityProvider.signUp(signUpRequest);
+            AdminConfirmSignUpResult confirmResult = confirmSignUp(credentials.getUsername());
+        } catch (Exception ex) {
+            res.setError(500, ex);
+        }
+
+        return res;
+    }
+
+    private AdminConfirmSignUpResult confirmSignUp(String username) {
+        ApiGatewayResponse res = new ApiGatewayResponse();
+        AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+
+        AdminConfirmSignUpRequest confirmRequest = new AdminConfirmSignUpRequest();
+        confirmRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+        confirmRequest.setUsername(username);
+        return cognitoIdentityProvider.adminConfirmSignUp(confirmRequest);
     }
 
 }

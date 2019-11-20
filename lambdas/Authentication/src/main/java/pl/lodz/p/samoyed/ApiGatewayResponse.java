@@ -17,6 +17,11 @@ public class ApiGatewayResponse {
         this.headers.put("Access-Control-Allow-Origin", "*");
     }
 
+    public void setError(int statusCode, Exception exception) {
+        this.statusCode = statusCode;
+        this.body = "{\"error\":\"" + exception.getMessage() + "\"}";
+    }
+
     public int getStatusCode() {
         return statusCode;
     }
