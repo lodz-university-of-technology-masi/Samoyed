@@ -8,7 +8,7 @@ import java.util.List;
 public class Test {
 
     private String id;
-    private Integer author;
+    private String author;
     private String title;
     private Long createdOn;
     private List<Question> questions;
@@ -23,10 +23,10 @@ public class Test {
     }
 
     @DynamoDBAttribute(attributeName="Author")
-    public Integer getAuthor() {
+    public String getAuthor() {
         return author;
     }
-    public void setAuthor(Integer author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 

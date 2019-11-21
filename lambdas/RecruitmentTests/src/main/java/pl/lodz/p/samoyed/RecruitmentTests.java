@@ -10,7 +10,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Test;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RecruitmentTests {
 
@@ -20,58 +22,65 @@ public class RecruitmentTests {
 
     public ApiGatewayResponse add(Map<String, Object> input, Context context) {
 
-        ApiGatewayResponse response = new ApiGatewayResponse();
+        ApiGatewayRequest req = new ApiGatewayRequest(input);
+        ApiGatewayResponse res = new ApiGatewayResponse();
+        res.headers.put("Content-type", "application/json");
 
         try {
-            String body = (String) input.get("body");
-            Test test = om.readValue(body, Test.class);
-            test.setCreatedOn(System.currentTimeMillis());
-            mapper.save(test);
-            response.body = om.writeValueAsString(test);
+            UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+            if (user.getGroups().contains("recruiters")) {
+                Test test = om.readValue(req.getBody(), Test.class);
+                test.setAuthor(user.getUserId());
+                test.setCreatedOn(System.currentTimeMillis());
+                mapper.save(test);
+                res.body = om.writeValueAsString(test);
+                res.statusCode = 201;
+            } else {
+                throw new Exception("You must be recruiter to perform this action!");
+            }
         } catch (Exception ex) {
-            response.body = ex.getMessage();
-            return response;
+            res.setError(500, ex);
         }
 
-        response.statusCode = 201;
-        response.headers.put("Content-type", "text/html");
-        return response;
+        return res;
 
     }
 
     public ApiGatewayResponse fetch(Map<String, Object> input, Context context) {
 
-        ApiGatewayResponse response = new ApiGatewayResponse();
+        ApiGatewayRequest req = new ApiGatewayRequest(input);
+        ApiGatewayResponse res = new ApiGatewayResponse();
 
         try {
             Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
             String testId = (String) pathParameters.get("id");
             Test test = mapper.load(Test.class, testId);
-            response.body = om.writeValueAsString(test);
-            response.headers.put("Content-type", "application/json");
-            return response;
+            res.body = om.writeValueAsString(test);
+            res.headers.put("Content-type", "application/json");
+            return res;
         } catch (JsonProcessingException ex) {
-            response.body = ex.getMessage();
-            return response;
+            res.body = ex.getMessage();
+            return res;
         }
 
     }
 
     public ApiGatewayResponse fetchAll(Map<String, Object> input, Context context) {
 
-        ApiGatewayResponse response = new ApiGatewayResponse();
+        ApiGatewayRequest req = new ApiGatewayRequest(input);
+        ApiGatewayResponse res = new ApiGatewayResponse();
 
         try {
             om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             DynamoDBScanExpression exp = new DynamoDBScanExpression();
             exp.setProjectionExpression("Id,Title");
             List<Test> test = mapper.scan(Test.class, exp);
-            response.body = om.writeValueAsString(test);
-            response.headers.put("Content-type", "application/json");
-            return response;
+            res.body = om.writeValueAsString(test);
+            res.headers.put("Content-type", "application/json");
+            return res;
         } catch (JsonProcessingException ex) {
-            response.body = ex.getMessage();
-            return response;
+            res.body = ex.getMessage();
+            return res;
         }
 
     }
