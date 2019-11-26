@@ -28,59 +28,53 @@ public class UsersManagement {
 
     public ApiGatewayResponse signIn(Map<String, Object> input, Context context) {
 
-        ApiGatewayResponse res = new ApiGatewayResponse();
+        return new ApiGatewayResponseBuilder()
+            .withRequestData(input)
+            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+                AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+                String body = (String) input.get("body");
+                Credentials credentials = om.readValue(body, Credentials.class);
 
-        try {
-            AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
-            String body = (String) input.get("body");
-            Credentials credentials = om.readValue(body, Credentials.class);
+                AdminInitiateAuthRequest initiateAuthRequest = new AdminInitiateAuthRequest();
+                initiateAuthRequest.setAuthFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH);
+                initiateAuthRequest.setClientId(cognitoConfig.getClientId());
+                initiateAuthRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+                initiateAuthRequest.addAuthParametersEntry("USERNAME", credentials.getUsername());
+                initiateAuthRequest.addAuthParametersEntry("PASSWORD", credentials.getPassword());
+                AdminInitiateAuthResult initiateAuthResult =
+                        cognitoIdentityProvider.adminInitiateAuth(initiateAuthRequest);
 
-            AdminInitiateAuthRequest initiateAuthRequest = new AdminInitiateAuthRequest();
-            initiateAuthRequest.setAuthFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH);
-            initiateAuthRequest.setClientId(cognitoConfig.getClientId());
-            initiateAuthRequest.setUserPoolId(cognitoConfig.getUserPoolId());
-            initiateAuthRequest.addAuthParametersEntry("USERNAME", credentials.getUsername());
-            initiateAuthRequest.addAuthParametersEntry("PASSWORD", credentials.getPassword());
-            AdminInitiateAuthResult initiateAuthResult =
-                    cognitoIdentityProvider.adminInitiateAuth(initiateAuthRequest);
+                Tokens tokens = new Tokens();
+                tokens.setAccessToken(initiateAuthResult.getAuthenticationResult().getAccessToken());
+                tokens.setIdToken(initiateAuthResult.getAuthenticationResult().getIdToken());
+                tokens.setRefreshToken(initiateAuthResult.getAuthenticationResult().getRefreshToken());
 
-            Tokens tokens = new Tokens();
-            tokens.setAccessToken(initiateAuthResult.getAuthenticationResult().getAccessToken());
-            tokens.setIdToken(initiateAuthResult.getAuthenticationResult().getIdToken());
-            tokens.setRefreshToken(initiateAuthResult.getAuthenticationResult().getRefreshToken());
+                res.body = om.writeValueAsString(tokens);
 
-            res.body = om.writeValueAsString(tokens);
-        } catch (Exception ex) {
-            res.setError(500, ex);
-        }
-
-        return res;
+            }).handle();
 
     }
 
     public ApiGatewayResponse signUp(Map<String, Object> input, Context context) {
 
-        ApiGatewayResponse res = new ApiGatewayResponse();
+        return new ApiGatewayResponseBuilder()
+            .withRequestData(input)
+            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+                AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+                String body = (String) input.get("body");
+                Credentials credentials = om.readValue(body, Credentials.class);
 
-        try {
-            AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
-            String body = (String) input.get("body");
-            Credentials credentials = om.readValue(body, Credentials.class);
+                SignUpRequest signUpRequest = new SignUpRequest();
+                signUpRequest.setClientId(cognitoConfig.getClientId());
+                signUpRequest.setUsername(credentials.getUsername());
+                signUpRequest.setPassword(credentials.getPassword());
 
-            SignUpRequest signUpRequest = new SignUpRequest();
-            signUpRequest.setClientId(cognitoConfig.getClientId());
-            signUpRequest.setUsername(credentials.getUsername());
-            signUpRequest.setPassword(credentials.getPassword());
+                SignUpResult signUpResult = cognitoIdentityProvider.signUp(signUpRequest);
+                AdminConfirmSignUpResult confirmResult = confirmSignUp(credentials.getUsername());
+                AdminAddUserToGroupResult gaddResult = addUserToGroup(
+                        credentials.getUsername(), "candidates");
+            }).handle();
 
-            SignUpResult signUpResult = cognitoIdentityProvider.signUp(signUpRequest);
-            AdminConfirmSignUpResult confirmResult = confirmSignUp(credentials.getUsername());
-            AdminAddUserToGroupResult gaddResult = addUserToGroup(
-                    credentials.getUsername(), "candidates");
-        } catch (Exception ex) {
-            res.setError(500, ex);
-        }
-
-        return res;
     }
 
     private AdminAddUserToGroupResult addUserToGroup(String username, String group) {

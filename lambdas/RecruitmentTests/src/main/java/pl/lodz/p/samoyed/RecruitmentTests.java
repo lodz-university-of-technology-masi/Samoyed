@@ -60,22 +60,17 @@ public class RecruitmentTests {
 
     public ApiGatewayResponse fetchAll(Map<String, Object> input, Context context) {
 
-        ApiGatewayRequest req = new ApiGatewayRequest(input);
-        ApiGatewayResponse res = new ApiGatewayResponse();
-
-        try {
-            UserIdentity user = new UserIdentity(req.getCognitoIdToken());
-            om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            DynamoDBScanExpression exp = new DynamoDBScanExpression();
-            exp.setProjectionExpression("Id,Title");
-            List<Test> test = mapper.scan(Test.class, exp);
-            res.body = om.writeValueAsString(test);
-            res.headers.put("Content-type", "application/json");
-            return res;
-        } catch (Exception ex) {
-            res.body = ex.getMessage();
-            return res;
-        }
+        return new ApiGatewayResponseBuilder()
+            .withRequestData(input)
+            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                DynamoDBScanExpression exp = new DynamoDBScanExpression();
+                exp.setProjectionExpression("Id,Title");
+                List<Test> test = mapper.scan(Test.class, exp);
+                res.body = om.writeValueAsString(test);
+                res.headers.put("Content-type", "application/json");
+            }).handle();
 
     }
 
