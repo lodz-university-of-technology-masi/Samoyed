@@ -21,29 +21,22 @@ public class RecruitmentTests {
     private ObjectMapper om = new ObjectMapper();
 
     public ApiGatewayResponse add(Map<String, Object> input, Context context) {
-
-        ApiGatewayRequest req = new ApiGatewayRequest(input);
-        ApiGatewayResponse res = new ApiGatewayResponse();
-        res.headers.put("Content-type", "application/json");
-
-        try {
-            UserIdentity user = new UserIdentity(req.getCognitoIdToken());
-            if (user.getGroups().contains("recruiters")) {
-                Test test = om.readValue(req.getBody(), Test.class);
-                test.setAuthor(user.getUserId());
-                test.setCreatedOn(System.currentTimeMillis());
-                mapper.save(test);
-                res.body = om.writeValueAsString(test);
-                res.statusCode = 201;
-            } else {
-                throw new Exception("You must be recruiter to perform this action!");
-            }
-        } catch (Exception ex) {
-            res.setError(500, ex);
-        }
-
-        return res;
-
+        return new ApiGatewayResponseBuilder()
+            .withRequestData(input)
+            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+                res.headers.put("Content-type", "application/json");
+                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                if (user.getGroups().contains("recruiters")) {
+                    Test test = om.readValue(req.getBody(), Test.class);
+                    test.setAuthor(user.getUserId());
+                    test.setCreatedOn(System.currentTimeMillis());
+                    mapper.save(test);
+                    res.body = om.writeValueAsString(test);
+                    res.statusCode = 201;
+                } else {
+                    throw new Exception("You must be recruiter to perform this action!");
+                }
+            }).handle();
     }
 
     public ApiGatewayResponse fetch(Map<String, Object> input, Context context) {
@@ -71,6 +64,7 @@ public class RecruitmentTests {
         ApiGatewayResponse res = new ApiGatewayResponse();
 
         try {
+            UserIdentity user = new UserIdentity(req.getCognitoIdToken());
             om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             DynamoDBScanExpression exp = new DynamoDBScanExpression();
             exp.setProjectionExpression("Id,Title");
@@ -78,7 +72,7 @@ public class RecruitmentTests {
             res.body = om.writeValueAsString(test);
             res.headers.put("Content-type", "application/json");
             return res;
-        } catch (JsonProcessingException ex) {
+        } catch (Exception ex) {
             res.body = ex.getMessage();
             return res;
         }
