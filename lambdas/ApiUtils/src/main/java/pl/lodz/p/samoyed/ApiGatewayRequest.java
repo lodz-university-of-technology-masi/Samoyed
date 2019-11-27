@@ -36,9 +36,11 @@ public class ApiGatewayRequest {
     public String getCognitoIdToken() {
         if (this.headers.containsKey("Authorization")) {
             String[] authHeader = this.headers.get("Authorization").split(" ");
-            return authHeader[1];
+            if (authHeader[0].equals("Bearer")) {
+                return authHeader[1];
+            }
         }
-        else return "";
+        return "";
     }
 
 }

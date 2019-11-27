@@ -2,8 +2,11 @@ package pl.lodz.p.samoyed;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDeleteExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -70,6 +73,23 @@ public class RecruitmentTests {
                 List<Test> test = mapper.scan(Test.class, exp);
                 res.body = om.writeValueAsString(test);
                 res.headers.put("Content-type", "application/json");
+            }).handle();
+
+    }
+
+    public ApiGatewayResponse delete(Map<String, Object> input, Context context) {
+
+        return new ApiGatewayResponseBuilder()
+            .withRequestData(input)
+            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                String testId = (String) req.getPathParameters().get("id");
+                Test test = mapper.load(Test.class, testId);
+                ExpectedAttributeValue userId = new ExpectedAttributeValue();
+                userId.setValue(new AttributeValue(user.getUserId()));
+                DynamoDBDeleteExpression expr = new DynamoDBDeleteExpression()
+                        .withExpectedEntry("Author", userId);
+                mapper.delete(test, expr);
             }).handle();
 
     }
