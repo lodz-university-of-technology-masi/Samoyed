@@ -11,4 +11,8 @@
   .Home .lander p {
     color: #999;
   }
+
+  .lander{
+    position: relative;
+  }
   

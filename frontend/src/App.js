@@ -6,11 +6,15 @@ import "./App.css";
 import Routes from './routes/Routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './assets/logo.png';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import testReducer from './redux/reducers/TestReducer';
 
+const store = createStore(testReducer);
 
 function App(props) {
   return (
-    <>
+    <Provider store = {store}>
       <Navbar id="mainNav" bg="light" expand="lg" fluid collapseOnSelect>
         <div className="App container">
         <Navbar.Brand>
@@ -21,9 +25,6 @@ function App(props) {
         <Navbar.Toggle />
         <Navbar.Collapse >
           <Nav className="ml-auto" pullRight>
-          <LinkContainer to="/signup">
-              <NavItem>Zarejestruj się</NavItem>
-            </LinkContainer>
             <LinkContainer to="/login">
               <NavItem>Zaloguj się</NavItem>
             </LinkContainer>
@@ -40,7 +41,7 @@ function App(props) {
       <div className="container">
         <Routes />
       </div>
-    </>
+    </Provider>
   );
 }
 
