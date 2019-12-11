@@ -38,7 +38,7 @@ function App(props) {
         </Navbar.Collapse>
         </div> 
       </Navbar>
-      <div className="container">
+      <div className="container py-4">
         <Routes />
       </div>
     </Provider>

@@ -58,7 +58,7 @@ export default function TestView(props)
 			)
 		}
 		return (
-			<div className="card" key={"question" + i}>
+			<div className="card mb-3" key={"question" + i}>
 				{heading}
 				<div className="card-body">{divs}</div>
 			</div>

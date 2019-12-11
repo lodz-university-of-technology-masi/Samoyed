@@ -70,12 +70,13 @@ export default function TestCreate()
     }
 
     return (<>
+        <h3>Utwórz nowy test</h3>
         <div className="form-group row">
             <input className="form-control" placeholder="Tytuł" onChange={changeTitle} />
         </div>
         {questionList}
         <div className="form-group row">
-            <button className="btn btn-primary col-12" onClick={appendQuestion}>Dodaj pytanie</button>
+            <button className="btn btn-primary col-12 mb-2" onClick={appendQuestion}>Dodaj pytanie</button>
             <button className="btn btn-primary col-12" onClick={send}>Zapisz</button>
         </div>
     </>)
