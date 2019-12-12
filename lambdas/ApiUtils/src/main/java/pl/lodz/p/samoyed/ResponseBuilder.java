@@ -25,10 +25,20 @@ public class ResponseBuilder {
     public Response handle() {
         try {
             this.handler.handle(request, response);
+        } catch (ApiException ex) {
+            response.statusCode = ex.getStatus();
+            response.body = "{";
+            response.body += "\"error\":\"" + ex.getMessage() + "\"";
+            response.body += ", \"name\":\"" + ex.getClass().getName() + "\"";
+            response.body += "}";
         } catch (Exception ex) {
-            this.response.setError(500, ex);
+            response.statusCode = 500;
+            response.body = "{";
+            response.body += "\"error\":\"" + ex.getMessage() + "\"";
+            response.body += ", \"name\":\"" + ex.getClass().getName() + "\"";
+            response.body += "}";
         }
-        return this.response;
+        return response;
     }
 
 }

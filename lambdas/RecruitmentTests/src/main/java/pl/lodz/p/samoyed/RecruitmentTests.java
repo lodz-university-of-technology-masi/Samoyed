@@ -36,7 +36,7 @@ public class RecruitmentTests {
                     res.body = om.writeValueAsString(test);
                     res.statusCode = 201;
                 } else {
-                    throw new Exception("You must be recruiter to perform this action!");
+                    throw new ApiException("You must be recruiter to perform this action.");
                 }
             }).handle();
 
@@ -49,6 +49,9 @@ public class RecruitmentTests {
             .withHandler((Request req, Response res) -> {
                 String testId = (String) req.getPathParameters().get("id");
                 Test test = mapper.load(Test.class, testId);
+                if (test == null) {
+                    throw new ApiException("Test does not exist.", 404);
+                }
                 res.body = om.writeValueAsString(test);
                 res.headers.put("Content-type", "application/json");
             }).handle();
@@ -60,7 +63,7 @@ public class RecruitmentTests {
         return new ResponseBuilder()
             .withRequestData(input)
             .withHandler((Request req, Response res) -> {
-                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+//                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 DynamoDBScanExpression exp = new DynamoDBScanExpression();
                 exp.setProjectionExpression("Id,Title");
