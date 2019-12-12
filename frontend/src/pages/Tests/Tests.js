@@ -26,29 +26,40 @@ export default function Tests()
 
 	return (
 		(loaded) ? (<>
-			<h1>Testy</h1>
-			<table class="table">
+			<table className="table">
 				<thead>
 					<tr>
-						<th>Id</th>
 						<th>Tytuł</th>
+						<th>Utworzono</th>
+						<th>Akcje</th>
 					</tr>
 				</thead>
 				<tbody>
-					{ testsList.map((test) => {
+					{ testsList.map((test, i) => {
 						return (
-							<tr>
-								<td><Link to={ "/test/" + test.id }>{ test.id }</Link></td>
+							<tr key={i}>
 								<td>
-									{ test.versions.map(v => {
-										return <div>{ "[" + v.lang + "] " + v.title }</div>
+									{ test.versions.map((v, j) => {
+										return <div key={j}>{ "[" + v.lang + "] " + v.title }</div>
 									})}
+								</td>
+								<td>{ new Date(test.createdOn).toLocaleDateString() }</td>
+								<td>
+									<Link to={"/test/" + test.id}>
+										<button className="btn btn-primary mr-1">Edytuj</button>
+									</Link>
+									<Link to={"/test/" + test.id}>
+										<button className="btn btn-danger">Usuń</button>
+									</Link>
 								</td>
 							</tr>
 						)
 					}) }
 				</tbody>
 			</table>
+			<Link to="/test/create" className="row">
+				<button className="btn btn-primary col-12">Dodaj nowy test</button>
+			</Link>
 		</>) : (<Loader />)
 	);
 }

@@ -93,7 +93,7 @@ export default function TestView(props)
 
 	function send(e) {
 		let answerSheet = {
-			id: id,
+			testId: id,
 			answers: answers
 		}
 		console.log(answerSheet)

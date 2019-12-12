@@ -3,20 +3,20 @@ import "./LoginModal.css"
 
 export default function LoginModal() {
     return (
-        <div class="wrapper fadeInDown">
+        <div className="wrapper fadeInDown">
             <div id="formContent">
-                <div class="fadeIn first">
+                <div className="fadeIn first">
                     <img alt="person icon" src="https://img.icons8.com/pastel-glyph/64/000000/person-male.png"/>
                 </div>
 
                 <form>
-                    <input type="text" id="login" class="fadeIn second" name="login" placeholder="Login" />
-                    <input type="text" id="password" class="fadeIn third" name="login" placeholder="Hasło" />
-                    <input type="submit" class="fadeIn fourth" value="Zaloguj się" />
+                    <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login" />
+                    <input type="text" id="password" className="fadeIn third" name="login" placeholder="Hasło" />
+                    <input type="submit" className="fadeIn fourth" value="Zaloguj się" />
                 </form>
 
                 <div id="formFooter">
-                    <a class="underlineHover" href="/">Zapomniałeś hasła?</a>
+                    <a className="underlineHover" href="/">Zapomniałeś hasła?</a>
                 </div>
             </div>
         </div>
