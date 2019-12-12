@@ -9,11 +9,9 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Test;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +22,7 @@ public class RecruitmentTests {
     private ObjectMapper om = new ObjectMapper();
 
     public Response add(Map<String, Object> input, Context context) {
+
         return new ResponseBuilder()
             .withRequestData(input)
             .withHandler((Request req, Response res) -> {
@@ -40,24 +39,19 @@ public class RecruitmentTests {
                     throw new Exception("You must be recruiter to perform this action!");
                 }
             }).handle();
+
     }
 
     public Response fetch(Map<String, Object> input, Context context) {
 
-        Request req = new Request(input);
-        Response res = new Response();
-
-        try {
-            Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
-            String testId = (String) pathParameters.get("id");
-            Test test = mapper.load(Test.class, testId);
-            res.body = om.writeValueAsString(test);
-            res.headers.put("Content-type", "application/json");
-            return res;
-        } catch (JsonProcessingException ex) {
-            res.body = ex.getMessage();
-            return res;
-        }
+        return new ResponseBuilder()
+            .withRequestData(input)
+            .withHandler((Request req, Response res) -> {
+                String testId = (String) req.getPathParameters().get("id");
+                Test test = mapper.load(Test.class, testId);
+                res.body = om.writeValueAsString(test);
+                res.headers.put("Content-type", "application/json");
+            }).handle();
 
     }
 
