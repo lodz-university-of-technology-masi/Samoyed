@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import apiRequest from "../../ApiRequest"
+import Loader from "../../components/Loader";
 
 export default function TestView(props)
 {
 	const [params] = useState({...props.match.params})
+	const [loaded, setLoaded] = useState(false)
 	const [id, setId] = useState("")
 	const [title, setTitle] = useState("")
 	const [questions, setQuestions] = useState([])
@@ -10,14 +13,21 @@ export default function TestView(props)
 
 	// Load question from API
 	useEffect(() => {
-		var xmlHttp = new XMLHttpRequest()
-		xmlHttp.open("GET", "https://8mx18wwru3.execute-api.us-east-1.amazonaws.com/dev/tests/id/" + params.id, false)
-		xmlHttp.setRequestHeader("Accept", "application/json")
-		xmlHttp.send(null)
-		let test = JSON.parse(xmlHttp.responseText)
-		setId(test.id)
-		setTitle(test.title)
-		setQuestions(test.questions)
+		apiRequest({
+			method: "GET",
+			path: "tests/id/" + params.id,
+			success: function(res) {
+				let test = JSON.parse(res.responseText)
+				setId(test.id)
+				setTitle(test.title)
+				setQuestions(test.questions)
+				setLoaded(true)
+			},
+			error: function(err) {
+				console.log(err)
+				// ??
+			}
+		})
 	}, [params.id])
 	
 	// Renders all the divs containing different types of questions
@@ -81,10 +91,12 @@ export default function TestView(props)
 	}
 
 	return (
+		(loaded) ? (
 		<>
 			<h1>{title}</h1>
 			{questionsView}
 			<button className="btn btn-primary col-12" onClick={send}>Zapisz i zakończ test</button>
 		</>
+		) : (<Loader />)
 	);
 }
