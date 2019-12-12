@@ -25,30 +25,30 @@ export default function Tests()
 	}, [])
 
 	return (
-		(loaded) ? (
-			<div className="Team">
-				<div className="lander">
-					<h1>Testy</h1>
-					<table class="table">
-						<thead>
+		(loaded) ? (<>
+			<h1>Testy</h1>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Tytuł</th>
+					</tr>
+				</thead>
+				<tbody>
+					{ testsList.map((test) => {
+						return (
 							<tr>
-								<th>Id</th>
-								<th>Tytuł</th>
+								<td><Link to={ "/test/" + test.id }>{ test.id }</Link></td>
+								<td>
+									{ test.versions.map(v => {
+										return <div>{ "[" + v.lang + "] " + v.title }</div>
+									})}
+								</td>
 							</tr>
-						</thead>
-						<tbody>
-							{ testsList.map((test) => {
-								return (
-									<tr>
-										<td><Link to={ "/test/" + test.id }>{ test.id }</Link></td>
-										<td>{ test.title }</td>
-									</tr>
-								)
-							}) }
-						</tbody>
-					</table>
-				</div>
-			</div>
-		) : (<Loader />)
+						)
+					}) }
+				</tbody>
+			</table>
+		</>) : (<Loader />)
 	);
 }

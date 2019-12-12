@@ -7,8 +7,8 @@ export default function TestView(props)
 	const [params] = useState({...props.match.params})
 	const [loaded, setLoaded] = useState(false)
 	const [id, setId] = useState("")
-	const [title, setTitle] = useState("")
-	const [questions, setQuestions] = useState([])
+	const [versions, setVersions] = useState([])
+	const [viewVersion, setViewVersion] = useState(-1)
 	const [answers, setAnswers] = useState([])
 
 	// Load question from API
@@ -19,8 +19,8 @@ export default function TestView(props)
 			success: function(res) {
 				let test = JSON.parse(res.responseText)
 				setId(test.id)
-				setTitle(test.title)
-				setQuestions(test.questions)
+				setVersions(test.versions)
+				setViewVersion(0)
 				setLoaded(true)
 			},
 			error: function(err) {
@@ -29,56 +29,66 @@ export default function TestView(props)
 			}
 		})
 	}, [params.id])
-	
+
 	// Renders all the divs containing different types of questions
-	const questionsView = questions.map((q, i) => {
-		let divs = []
-		// Title
-		let heading = (
-			<div className="card-header">
-				{i + 1 + ". " + q.content}
-			</div>
-		)
-		// Questions
-		if (q.type === "W") {
-			// Close question
-			let answers = q.answers.split("|")
-			for (let n in answers) {
+	const questionsView = function() {
+		// Render nothing if test not loaded (there is no versions)
+		if (viewVersion < 0) return "";
+		// Render test otherwise
+		let map = versions[viewVersion].questions.map((q, i) => {
+			let divs = []
+			// Title
+			let heading = (
+				<div className="card-header">
+					{i + 1 + ". " + q.content}
+				</div>
+			)
+			// Questions
+			if (q.type === "W") {
+				// Close question
+				let answers = q.answers.split("|")
+				for (let n in answers) {
+					divs.push(
+						<div className="form-check" key={"answer" + i + "." + n}>
+							<label className="form-check-label">
+								<input onChange={updateAnswer} className="form-check-input" 
+										type="radio" name={i} value={n} />
+								{answers[n]}
+							</label>
+						</div>
+					)
+				}
+			} else if (q.type === "O") {
+				// Open question
 				divs.push(
-					<div className="form-check" key={"answer" + i + "." + n}>
-						<label className="form-check-label">
-							<input onChange={updateAnswer} className="form-check-input" 
-									type="radio" name={i} value={n} />
-							{answers[n]}
-						</label>
-					</div>
+					<input onChange={updateAnswer} className="form-control form-control-sm" 
+							name={i} placeholder="Odpowiedź" key={"answer" + i} />
+				)
+			} else if (q.type === "L") {
+				// Number value
+				divs.push(
+					<input onChange={updateAnswer} className="form-control form-control-sm" 
+							type="number" name={i} placeholder="Odpowiedź" key={"answer" + i} />
 				)
 			}
-		} else if (q.type === "O") {
-			// Open question
-			divs.push(
-				<input onChange={updateAnswer} className="form-control form-control-sm" 
-						name={i} placeholder="Odpowiedź" key={"answer" + i} />
+			return (
+				<div className="card mb-3" key={"question" + i}>
+					{heading}
+					<div className="card-body">{divs}</div>
+				</div>
 			)
-		} else if (q.type === "L") {
-			// Number value
-			divs.push(
-				<input onChange={updateAnswer} className="form-control form-control-sm" 
-						type="number" name={i} placeholder="Odpowiedź" key={"answer" + i} />
-			)
-		}
-		return (
-			<div className="card mb-3" key={"question" + i}>
-				{heading}
-				<div className="card-body">{divs}</div>
-			</div>
-		)
-	})
+		})
+		return map
+	}
 
 	function updateAnswer(e) {
 		let newAnswers = [...answers]
 		newAnswers[e.target.name] = e.target.value
 		setAnswers(newAnswers)
+	}
+
+	function changeVersion(e) {
+		setViewVersion(e.target.value)
 	}
 
 	function send(e) {
@@ -93,8 +103,17 @@ export default function TestView(props)
 	return (
 		(loaded) ? (
 		<>
-			<h1>{title}</h1>
-			{questionsView}
+			{ (viewVersion >= 0) ? 
+				<div className="form-inline">
+					<select className="form-control" onChange={changeVersion}>
+						{ versions.map((v, i) => {
+							return <option value={i}>{ v.lang }</option>
+						}) }
+					</select>
+					<h1 className="ml-3">{ versions[viewVersion].title }</h1>
+				</div>
+			: "" }
+			{ questionsView() }
 			<button className="btn btn-primary col-12" onClick={send}>Zapisz i zakończ test</button>
 		</>
 		) : (<Loader />)

@@ -11,6 +11,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Test;
+import pl.lodz.p.samoyed.model.TestContent;
 
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,13 @@ public class RecruitmentTests {
 //                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 DynamoDBScanExpression exp = new DynamoDBScanExpression();
-                exp.setProjectionExpression("Id,Title");
-                List<Test> test = mapper.scan(Test.class, exp);
-                res.body = om.writeValueAsString(test);
+                List<Test> tests = mapper.scan(Test.class, exp);
+                for (Test t : tests) {
+                    for (TestContent tc : t.getVersions()) {
+                        tc.setQuestions(null);
+                    }
+                }
+                res.body = om.writeValueAsString(tests);
                 res.headers.put("Content-type", "application/json");
             }).handle();
 

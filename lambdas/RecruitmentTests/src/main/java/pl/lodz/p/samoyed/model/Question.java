@@ -7,7 +7,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 public class Question {
 
     private String type;
-    private String lang;
     private String content;
     private String answers;
 
@@ -15,9 +14,8 @@ public class Question {
     {
     }
 
-    public Question(String type, String lang, String contents, String answers) {
+    public Question(String type, String contents, String answers) {
         this.type = type;
-        this.lang = lang;
         this.content = contents;
         this.answers = answers;
     }
@@ -28,14 +26,6 @@ public class Question {
     }
     public void setType(String type) {
         this.type = type;
-    }
-
-    @DynamoDBAttribute(attributeName = "Lang")
-    public String getLang() {
-        return lang;
-    }
-    public void setLang(String lang) {
-        this.lang = lang;
     }
 
     @DynamoDBAttribute(attributeName = "Content")
@@ -53,4 +43,5 @@ public class Question {
     public void setAnswers(String answers) {
         this.answers = answers;
     }
+
 }
