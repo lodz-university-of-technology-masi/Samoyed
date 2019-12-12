@@ -26,11 +26,11 @@ public class UsersManagement {
     private ObjectMapper om = new ObjectMapper();
     private CognitoConfig cognitoConfig = new CognitoConfig();
 
-    public ApiGatewayResponse signIn(Map<String, Object> input, Context context) {
+    public Response signIn(Map<String, Object> input, Context context) {
 
-        return new ApiGatewayResponseBuilder()
+        return new ResponseBuilder()
             .withRequestData(input)
-            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+            .withHandler((Request req, Response res) -> {
                 AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
                 String body = (String) input.get("body");
                 Credentials credentials = om.readValue(body, Credentials.class);
@@ -55,11 +55,11 @@ public class UsersManagement {
 
     }
 
-    public ApiGatewayResponse signUp(Map<String, Object> input, Context context) {
+    public Response signUp(Map<String, Object> input, Context context) {
 
-        return new ApiGatewayResponseBuilder()
+        return new ResponseBuilder()
             .withRequestData(input)
-            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+            .withHandler((Request req, Response res) -> {
                 AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
                 String body = (String) input.get("body");
                 Credentials credentials = om.readValue(body, Credentials.class);
@@ -103,7 +103,7 @@ public class UsersManagement {
     }
 
     private AdminConfirmSignUpResult confirmSignUp(String username) {
-        ApiGatewayResponse res = new ApiGatewayResponse();
+        Response res = new Response();
         AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
 
         AdminConfirmSignUpRequest confirmRequest = new AdminConfirmSignUpRequest();

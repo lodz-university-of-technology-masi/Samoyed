@@ -23,10 +23,10 @@ public class RecruitmentTests {
     private DynamoDBMapper mapper = new DynamoDBMapper(client);
     private ObjectMapper om = new ObjectMapper();
 
-    public ApiGatewayResponse add(Map<String, Object> input, Context context) {
-        return new ApiGatewayResponseBuilder()
+    public Response add(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
             .withRequestData(input)
-            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+            .withHandler((Request req, Response res) -> {
                 res.headers.put("Content-type", "application/json");
                 UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 if (user.getGroups().contains("recruiters")) {
@@ -42,10 +42,10 @@ public class RecruitmentTests {
             }).handle();
     }
 
-    public ApiGatewayResponse fetch(Map<String, Object> input, Context context) {
+    public Response fetch(Map<String, Object> input, Context context) {
 
-        ApiGatewayRequest req = new ApiGatewayRequest(input);
-        ApiGatewayResponse res = new ApiGatewayResponse();
+        Request req = new Request(input);
+        Response res = new Response();
 
         try {
             Map<String, Object> pathParameters = (LinkedHashMap<String, Object>) input.get("pathParameters");
@@ -61,11 +61,11 @@ public class RecruitmentTests {
 
     }
 
-    public ApiGatewayResponse fetchAll(Map<String, Object> input, Context context) {
+    public Response fetchAll(Map<String, Object> input, Context context) {
 
-        return new ApiGatewayResponseBuilder()
+        return new ResponseBuilder()
             .withRequestData(input)
-            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+            .withHandler((Request req, Response res) -> {
                 UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 DynamoDBScanExpression exp = new DynamoDBScanExpression();
@@ -77,11 +77,11 @@ public class RecruitmentTests {
 
     }
 
-    public ApiGatewayResponse delete(Map<String, Object> input, Context context) {
+    public Response delete(Map<String, Object> input, Context context) {
 
-        return new ApiGatewayResponseBuilder()
+        return new ResponseBuilder()
             .withRequestData(input)
-            .withHandler((ApiGatewayRequest req, ApiGatewayResponse res) -> {
+            .withHandler((Request req, Response res) -> {
                 UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 String testId = (String) req.getPathParameters().get("id");
                 Test test = mapper.load(Test.class, testId);

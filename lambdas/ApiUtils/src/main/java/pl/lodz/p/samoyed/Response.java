@@ -3,14 +3,14 @@ package pl.lodz.p.samoyed;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ApiGatewayResponse {
+public class Response {
 
     public int statusCode = 200;
     public String body = "";
     public Map<String, String> headers = new TreeMap<String, String>();
     private final boolean isBase64Encoded = false;
 
-    public ApiGatewayResponse() {
+    public Response() {
         this.headers.put("Access-Control-Allow-Origin", "*");
     }
 
