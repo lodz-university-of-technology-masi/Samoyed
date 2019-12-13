@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function TestCreate()
 {
-    const [title, setTitle] = useState("")
+    const [title, setTitle] = useState({"PL":"", "EN":""})
     const [version, setVersion] = useState("PL")
     const [questions, setQuestions] = useState({"PL": [], "EN": []})
 
@@ -75,30 +75,36 @@ export default function TestCreate()
     }
 
     function changeTitle(e) {
-        setTitle(e.target.value)
+        let newTitle = {...title}
+        newTitle[version] = e.target.value;
+        setTitle(newTitle)
     }
 
     function send() {
         let test = {
-            title: title,
-            questions: questions.map(q => {
-                if (q.type === "W") {
-                    // For type W, concat all answers into string "value;correct",
-                    // then concat all answers together with ";"
-                    return {
-                        ...q, 
-                        lang: "PL",
-                        answers: q.answers.map(a => {
-                            return a.value + ";" + a.correct
-                        }).join(";")
-                    }
-                } else {
-                    // For any other type, just concat with ";"
-                    return {...q, lang: "PL", answers: q.answers.split(";").join("|")}
-                }
-            })
+            versions: []
         }
-        console.log(JSON.stringify(test))
+        // Add versions
+        for (let v in questions) {
+            if (title[v].length > 0) {
+                let n = test.versions.length;
+                test.versions[n] = {}
+                test.versions[n].lang = v
+                test.versions[n].title = title[v]
+                test.versions[n].questions = questions[v].map(q => {
+                    if (q.type === "W") {
+                        // Format all choice answers into single string
+                        let answers = q.answers.map(a => {
+                            return a.value + ";;" + a.correct
+                        })
+                        answers = answers.join("|")
+                        return {...q, answers: answers}
+                    }
+                    return {...q}
+                })
+            }
+        }
+        console.log(test)
     }
 
     // Renders block of modifiable questions
@@ -163,7 +169,10 @@ export default function TestCreate()
             <label className="form-check-label ml-2">Wersja językowa</label>
         </div>
         <div className="form-group row">
-            <input className="form-control" placeholder="Tytuł" onChange={changeTitle} />
+            <input className="form-control" placeholder="Tytuł" onChange={changeTitle} value={title[version]} />
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Jeśli pozostawisz to pole puste, wybrana wersja językowa zostanie zignorowana.
+            </small>
         </div>
         {questionList}
         <div className="form-group row">
