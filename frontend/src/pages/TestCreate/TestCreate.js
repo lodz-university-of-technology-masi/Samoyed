@@ -3,12 +3,107 @@ import React, { useState } from "react";
 export default function TestCreate()
 {
     const [title, setTitle] = useState("")
-    const [questions, setQuestions] = useState([])
+    const [version, setVersion] = useState("PL")
+    const [questions, setQuestions] = useState({"PL": [], "EN": []})
+
+    function changeVersion(e) {
+        setVersion(e.target.value)
+    }
+
+    function appendQuestion() {
+        let newQuestions = {...questions}
+        let q = {
+                    content: "",
+                    type: "O",
+                    answers: ""
+                }
+        newQuestions["PL"].push({...q})
+        newQuestions["EN"].push({...q})
+        setQuestions(newQuestions)
+    }
+
+    function deleteQuestion(e) {
+        let newQuestions = {...questions}
+        newQuestions["PL"].splice(e.target.name, 1);
+        newQuestions["EN"].splice(e.target.name, 1);
+        setQuestions(newQuestions)
+    }
+
+    function changeType(n, value) {
+        let newQuestions = {...questions}
+        newQuestions["PL"][n].type = value;
+        newQuestions["EN"][n].type = value;
+        if (value === "W") {
+            let q = [
+                        {value:"", correct:true},
+                        {value:"", correct:false},
+                        {value:"", correct:false},
+                        {value:"", correct:false}
+                    ]
+            newQuestions["PL"][n].answers = [...q]
+            newQuestions["EN"][n].answers = [...q]
+        } else {
+            newQuestions["PL"][n].answers = ""
+            newQuestions["EN"][n].answers = ""
+        }
+        setQuestions(newQuestions)
+    }
+
+    // Data handlers
+    function changeContent(n, value) {
+        let newQuestions = {...questions}
+        newQuestions[version][n].content = value;
+        setQuestions(newQuestions)
+    }
+
+    function changeAnswersSimple(n, value) {
+        let newQuestions = {...questions}
+        newQuestions[version][n].answers = value;
+        setQuestions(newQuestions)
+    }
+
+    function changeAnswersComplex(n, m, value) {
+        let newQuestions = {...questions}
+        newQuestions[version][n].answers[m].value = value;
+        setQuestions(newQuestions)
+    }
+
+    function changeAnswersCorrect(n, m, value) {
+        let newQuestions = {...questions}
+        newQuestions[version][n].answers[m].correct = value;
+        setQuestions(newQuestions)
+    }
+
+    function changeTitle(e) {
+        setTitle(e.target.value)
+    }
+
+    function send() {
+        let test = {
+            title: title,
+            questions: questions.map(q => {
+                if (q.type === "W") {
+                    // For type W, concat all answers into string "value;correct",
+                    // then concat all answers together with ";"
+                    return {
+                        ...q, 
+                        lang: "PL",
+                        answers: q.answers.map(a => {
+                            return a.value + ";" + a.correct
+                        }).join(";")
+                    }
+                } else {
+                    // For any other type, just concat with ";"
+                    return {...q, lang: "PL", answers: q.answers.split(";").join("|")}
+                }
+            })
+        }
+        console.log(JSON.stringify(test))
+    }
 
     // Renders block of modifiable questions
-    const questionList = questions.map((q, i) => {
-        // Depending on question type, this renders different blocks for typing
-        // answers in
+    const questionList = questions[version].map((q, i) => {
+        // Depending on question type, this renders different blocks for possible answers
         let answersBlock;
         if (q.type === "W") {
             answersBlock = []
@@ -59,97 +154,14 @@ export default function TestCreate()
         )
     })
 
-    function appendQuestion() {
-        let newQuestions = [...questions]
-        newQuestions.push({
-            content: "",
-            type: "W",
-            answers: [
-                {value:"", correct:true},
-                {value:"", correct:false},
-                {value:"", correct:false},
-                {value:"", correct:false}
-            ]
-        })
-        setQuestions(newQuestions)
-    }
-
-    function deleteQuestion(e) {
-        let newQuestions = [...questions]
-        newQuestions.splice(e.target.name, 1);
-        setQuestions(newQuestions)
-    }
-
-    // Data handlers
-    function changeContent(n, value) {
-        let newQuestions = [...questions]
-        newQuestions[n].content = value;
-        setQuestions(newQuestions)
-    }
-
-    function changeType(n, value) {
-        let newQuestions = [...questions]
-        newQuestions[n].type = value;
-        if (value === "W") {
-            newQuestions[n].answers = [
-                    {value:"", correct:true},
-                    {value:"", correct:false},
-                    {value:"", correct:false},
-                    {value:"", correct:false}
-                ]
-        } else {
-            newQuestions[n].answers = ""
-        }
-        setQuestions(newQuestions)
-    }
-
-    function changeAnswersSimple(n, value) {
-        let newQuestions = [...questions]
-        newQuestions[n].answers = value;
-        setQuestions(newQuestions)
-    }
-
-    function changeAnswersComplex(n, m, value) {
-        let newQuestions = [...questions]
-        newQuestions[n].answers[m].value = value;
-        setQuestions(newQuestions)
-    }
-
-    function changeAnswersCorrect(n, m, value) {
-        let newQuestions = [...questions]
-        newQuestions[n].answers[m].correct = value;
-        setQuestions(newQuestions)
-    }
-
-    function changeTitle(e) {
-        setTitle(e.target.value)
-    }
-
-    function send() {
-        let test = {
-            title: title,
-            questions: questions.map(q => {
-                if (q.type === "W") {
-                    // For type W, concat all answers into string "value;correct",
-                    // then concat all answers together with ";"
-                    return {
-                        ...q, 
-                        lang: "PL",
-                        answers: q.answers.map(a => {
-                            return a.value + ";" + a.correct
-                        }).join(";")
-                    }
-                } else {
-                    // For any other type, just concat with ";"
-                    return {...q, lang: "PL", answers: q.answers.split(";").join("|")}
-                }
-            })
-        }
-        console.log(JSON.stringify(test))
-    }
-
     return (<>
-        <h3>Utwórz nowy test</h3>
+        <div className="form-inline row mb-2">
+            <select className="form-control" value={version} onChange={changeVersion}>
+                <option value="PL">PL</option>
+                <option value="EN">EN</option>
+            </select>
+            <label className="form-check-label ml-2">Wersja językowa</label>
+        </div>
         <div className="form-group row">
             <input className="form-control" placeholder="Tytuł" onChange={changeTitle} />
         </div>
