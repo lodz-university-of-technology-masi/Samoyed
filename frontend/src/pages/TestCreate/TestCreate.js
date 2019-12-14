@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import Loader from '../../components/Loader'
+import { useHistory } from 'react-router'
+import apiRequest from "../../ApiRequest";
 
 export default function TestCreate()
 {
+    const history = useHistory()
+    const [uploading, setUploading] = useState(false)
     const [title, setTitle] = useState({"PL":"", "EN":""})
     const [version, setVersion] = useState("PL")
     const [questions, setQuestions] = useState({"PL": [], "EN": []})
@@ -104,6 +109,20 @@ export default function TestCreate()
                 })
             }
         }
+        setUploading(true)
+        apiRequest({
+            method: "POST",
+            path: "tests",
+            body: test,
+            success: function(res) {
+                // Redirect to /tests
+                history.push("/tests")
+            },
+            error: function(err) {
+                console.log(err)
+                // ??
+            }
+        })
         console.log(test)
     }
 
@@ -160,24 +179,32 @@ export default function TestCreate()
         )
     })
 
-    return (<>
-        <div className="form-inline row mb-2">
-            <select className="form-control" value={version} onChange={changeVersion}>
-                <option value="PL">PL</option>
-                <option value="EN">EN</option>
-            </select>
-            <label className="form-check-label ml-2">Wersja językowa</label>
-        </div>
-        <div className="form-group row">
-            <input className="form-control" placeholder="Tytuł" onChange={changeTitle} value={title[version]} />
-            <small id="passwordHelpBlock" class="form-text text-muted">
-                Jeśli pozostawisz to pole puste, wybrana wersja językowa zostanie zignorowana.
-            </small>
-        </div>
-        {questionList}
-        <div className="form-group row">
-            <button className="btn btn-primary col-12 mb-2" onClick={appendQuestion}>Dodaj pytanie</button>
-            <button className="btn btn-primary col-12" onClick={send}>Zapisz</button>
-        </div>
-    </>)
+    if (uploading) {
+
+        return <Loader><h3>Trwa zapisywanie...</h3></Loader>
+
+    } else {
+
+        return (<>
+            <div className="form-inline row mb-2">
+                <select className="form-control" value={version} onChange={changeVersion}>
+                    <option value="PL">PL</option>
+                    <option value="EN">EN</option>
+                </select>
+                <label className="form-check-label ml-2">Wersja językowa</label>
+            </div>
+            <div className="form-group row">
+                <input className="form-control" placeholder="Tytuł" onChange={changeTitle} value={title[version]} />
+                <small id="passwordHelpBlock" class="form-text text-muted">
+                    Jeśli pozostawisz to pole puste, wybrana wersja językowa zostanie zignorowana.
+                </small>
+            </div>
+            {questionList}
+            <div className="form-group row">
+                <button className="btn btn-primary col-12 mb-2" onClick={appendQuestion}>Dodaj pytanie</button>
+                <button className="btn btn-primary col-12" onClick={send}>Zapisz</button>
+            </div>
+        </>)
+
+    }
 }

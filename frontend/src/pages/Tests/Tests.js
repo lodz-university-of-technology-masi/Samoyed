@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/Loader";
+import _ from 'underscore'
 
 export default function Tests()
 {
@@ -23,6 +24,28 @@ export default function Tests()
 			}
 		})
 	}, [])
+
+	function deleteTest(id) {
+		let confirm = window.confirm("Czy na pewno chcesz usunąć test " + id + "?")
+		if (confirm) {
+			apiRequest({
+				method: "DELETE",
+				path: "tests/id/" + id,
+				success: function(res) {
+					// Update list
+					let newTestList = _.filter(testsList, t => {
+						if (t.id === id) return false;
+						return true
+					})
+					setTestsList(newTestList)
+				},
+				error: function(err) {
+					console.log(err)
+					// ??
+				}
+			})
+		}
+	}
 
 	return (
 		(loaded) ? (<>
@@ -48,9 +71,8 @@ export default function Tests()
 									<Link to={"/test/" + test.id}>
 										<button className="btn btn-primary mr-1">Edytuj</button>
 									</Link>
-									<Link to={"/test/" + test.id}>
-										<button className="btn btn-danger">Usuń</button>
-									</Link>
+									<button className="btn btn-danger"
+											onClick={(e) => { deleteTest(test.id) }}>Usuń</button>
 								</td>
 							</tr>
 						)
