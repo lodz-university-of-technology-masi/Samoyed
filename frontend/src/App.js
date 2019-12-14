@@ -8,9 +8,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './assets/logo.png';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import testReducer from './redux/reducers/TestReducer';
+import userReducer from './redux/reducers/userReducer';
 
-const store = createStore(testReducer);
+const store = createStore(userReducer);
 
 function App(props) {
   return (
