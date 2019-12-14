@@ -5,11 +5,15 @@ export default function apiRequest(options) {
         "https://8mx18wwru3.execute-api.us-east-1.amazonaws.com/dev/" + options.path,
         true
     )
-    xhr.onload = function(e) {
-        options.success(xhr)
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                options.success(xhr)
+            } else {
+                options.error(xhr)
+            }
+        }
     }
-    xhr.onerror = function(e) {
-        options.error(xhr)
-    }
-    xhr.send(options.body)
+    if (options.body) xhr.send(JSON.stringify(options.body))
+    else xhr.send(null)
 }

@@ -1,7 +1,45 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "./LoginModal.css"
+import Loader from "../Loader"
+import apiRequest from "../../ApiRequest"
 
 export default function LoginModal() {
+
+    const [isLoading, setIsLoading] = useState(false)
+    const [user, setUser] = useState({
+        login: "",
+        password: ""
+    })
+
+    function handleChange(e) {
+        let newUser = {...user}
+        newUser[e.target.name] = e.target.value
+        setUser(newUser)
+    }
+
+    function logIn(e) {
+        setIsLoading(true)
+        apiRequest({
+			method: "POST",
+            path: "user/signin/",
+            body: {
+                username: user.login,
+                password: user.password
+            },
+			success: function(res) {
+                setIsLoading(false)
+                let tokens = JSON.parse(res.responseText)
+                console.log(tokens)
+			},
+			error: function(err) {
+                setIsLoading(false)
+                alert("SOMETHING IS NOT QUITE RIGHT...")
+				// ??
+			}
+		})
+        e.preventDefault();
+    }
+
     return (
         <div className="wrapper fadeInDown">
             <div id="formContent">
@@ -10,9 +48,16 @@ export default function LoginModal() {
                 </div>
 
                 <form>
-                    <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login" />
-                    <input type="text" id="password" className="fadeIn third" name="login" placeholder="Hasło" />
-                    <input type="submit" className="fadeIn fourth" value="Zaloguj się" />
+                    { isLoading 
+                        ? <Loader size="100px"><h4>Logowanie...</h4></Loader>
+                        : (<>
+                            <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login"
+                                    value={user.login} onChange={handleChange} />
+                            <input type="text" id="password" className="fadeIn third" name="password" placeholder="Hasło"
+                                    value={user.password} onChange={handleChange} />
+                            <input type="submit" className="fadeIn fourth" value="Zaloguj się" onClick={logIn} />
+                        </>)
+                    }
                 </form>
 
                 <div id="formFooter">
@@ -21,4 +66,5 @@ export default function LoginModal() {
             </div>
         </div>
     )
+
 }

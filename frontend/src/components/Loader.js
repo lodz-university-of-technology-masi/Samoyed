@@ -1,11 +1,13 @@
 import React from 'react'
-import img from '../assets/loader.gif'
+import img from '../assets/loading.gif'
 
-export default function Loader() {
+export default function Loader(props) {
     return (
         <div className="text-center">
-            <h1>Ładowanie...</h1>
-            <img src={img} alt="Ładowanie..." />
+            <img src={img} alt="Ładowanie..." 
+                 width={ props.size ? props.size : "128px" } 
+                 style={{margin: 10}} />
+            { props.children }
         </div>
     )
 }

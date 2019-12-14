@@ -116,6 +116,6 @@ export default function TestView(props)
 			{ questionsView() }
 			<button className="btn btn-primary col-12" onClick={send}>Zapisz i zakończ test</button>
 		</>
-		) : (<Loader />)
+		) : (<Loader><h1>Ładowanie...</h1></Loader>)
 	);
 }

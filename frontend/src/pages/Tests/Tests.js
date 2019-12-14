@@ -60,6 +60,6 @@ export default function Tests()
 			<Link to="/test/create" className="row">
 				<button className="btn btn-primary col-12">Dodaj nowy test</button>
 			</Link>
-		</>) : (<Loader />)
+		</>) : (<Loader><h1>Ładowanie...</h1></Loader>)
 	);
 }
