@@ -11,6 +11,7 @@ import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpRequest;
 import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpResult;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.SignUpRequest;
 import com.amazonaws.services.cognitoidp.model.SignUpResult;
@@ -19,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Credentials;
 import pl.lodz.p.samoyed.model.Tokens;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class UsersManagement {
@@ -62,17 +65,27 @@ public class UsersManagement {
             .withHandler((Request req, Response res) -> {
                 AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
                 String body = (String) input.get("body");
-                Credentials credentials = om.readValue(body, Credentials.class);
+                Map<String, String> attributes =
+                        (Map<String, String>) om.readValue(body, Map.class);
 
                 SignUpRequest signUpRequest = new SignUpRequest();
                 signUpRequest.setClientId(cognitoConfig.getClientId());
-                signUpRequest.setUsername(credentials.getUsername());
-                signUpRequest.setPassword(credentials.getPassword());
+                signUpRequest.setUsername(attributes.get("email"));
+                signUpRequest.setPassword(attributes.get("password"));
+                List<AttributeType> cognitoAttrs = new LinkedList<>();
+                for (Map.Entry<String, String> i : attributes.entrySet()) {
+                    if (!i.getKey().equals("email") && !i.getKey().equals("password")) {
+                        cognitoAttrs.add(new AttributeType()
+                                .withName(i.getKey())
+                                .withValue(i.getValue()));
+                    }
+                }
+                signUpRequest.setUserAttributes(cognitoAttrs);
 
                 SignUpResult signUpResult = cognitoIdentityProvider.signUp(signUpRequest);
-                AdminConfirmSignUpResult confirmResult = confirmSignUp(credentials.getUsername());
+                AdminConfirmSignUpResult confirmResult = confirmSignUp(signUpRequest.getUsername());
                 AdminAddUserToGroupResult gaddResult = addUserToGroup(
-                        credentials.getUsername(), "candidates");
+                        signUpRequest.getUsername(), "candidates");
             }).handle();
 
     }

@@ -1,15 +1,26 @@
 import React from "react";
 import "./Home.css";
-import LoginModal from "../../components/LoginModal/LoginModal";
+import { useSelector } from 'react-redux'
+import Profile from "../Profile/Profile";
 
 export default function Home() {
-  return (
-    <div className="Home">
-      <div className="lander">
-        <LoginModal/>
-        <h1>Home</h1>
-        <p>Oto nasza (pusta) strona startowa</p>
-      </div>
-    </div>
-  );
+    
+    const state = useSelector(state => state)
+
+    if (state.isLogged) {
+        
+        return <Profile />
+        
+    } else {
+
+        return (
+            <div className="Home">
+                <div className="lander">
+                    <h1>Zaloguj się aby zobaczyć stronę domową.</h1>
+                </div>
+            </div>
+        );
+
+    }
+    
 }

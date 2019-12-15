@@ -59,7 +59,7 @@ export default function LoginModal() {
 
                 { loggedUser.isLogged ? (
                         <form>
-                            Zalogowano jako { loggedUser.data.email }
+                            Zalogowano jako <b>{ loggedUser.data.email }</b>
                             <input type="submit" className="fadeIn fourth" value="Wyloguj się" onClick={logOut} />
                         </form>
                     ) : (
