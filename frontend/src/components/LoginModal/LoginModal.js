@@ -2,9 +2,14 @@ import React, { useState } from 'react'
 import "./LoginModal.css"
 import Loader from "../Loader"
 import apiRequest from "../../ApiRequest"
+import { useDispatch, useSelector } from 'react-redux'
+import { userLogIn } from '../../redux/actions/userLogIn'
+import { userLogOut } from '../../redux/actions/userLogOut'
 
 export default function LoginModal() {
 
+    const dispatch = useDispatch()
+    const loggedUser = useSelector(state => state)
     const [isLoading, setIsLoading] = useState(false)
     const [user, setUser] = useState({
         login: "",
@@ -29,7 +34,7 @@ export default function LoginModal() {
 			success: function(res) {
                 setIsLoading(false)
                 let tokens = JSON.parse(res.responseText)
-                console.log(tokens)
+                dispatch(userLogIn(tokens, "DZIALAM"))
 			},
 			error: function(err) {
                 setIsLoading(false)
@@ -37,6 +42,11 @@ export default function LoginModal() {
 				// ??
 			}
 		})
+        e.preventDefault();
+    }
+    
+    function logOut(e) {
+        dispatch(userLogOut())
         e.preventDefault();
     }
 
@@ -47,18 +57,26 @@ export default function LoginModal() {
                     <img alt="person icon" src="https://img.icons8.com/pastel-glyph/64/000000/person-male.png"/>
                 </div>
 
-                <form>
-                    { isLoading 
-                        ? <Loader size="100px"><h4>Logowanie...</h4></Loader>
-                        : (<>
-                            <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login"
-                                    value={user.login} onChange={handleChange} />
-                            <input type="text" id="password" className="fadeIn third" name="password" placeholder="Hasło"
-                                    value={user.password} onChange={handleChange} />
-                            <input type="submit" className="fadeIn fourth" value="Zaloguj się" onClick={logIn} />
-                        </>)
-                    }
-                </form>
+                { loggedUser.isLogged ? (
+                        <form>
+                            Zalogowano jako <b>{ loggedUser.data.email }</b>
+                            <input type="submit" className="fadeIn fourth" value="Wyloguj się" onClick={logOut} />
+                        </form>
+                    ) : (
+                        <form>
+                            { isLoading 
+                                ? <Loader size="100px"><h4>Logowanie...</h4></Loader>
+                                : (<>
+                                    <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login"
+                                            value={user.login} onChange={handleChange} />
+                                    <input type="text" id="password" className="fadeIn third" name="password" placeholder="Hasło"
+                                            value={user.password} onChange={handleChange} />
+                                    <input type="submit" className="fadeIn fourth" value="Zaloguj się" onClick={logIn} />
+                                </>)
+                            }
+                        </form>
+                    )
+                }
 
                 <div id="formFooter">
                     <a className="underlineHover" href="/">Zapomniałeś hasła?</a>

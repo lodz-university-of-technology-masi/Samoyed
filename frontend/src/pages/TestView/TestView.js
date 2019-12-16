@@ -30,6 +30,25 @@ export default function TestView(props)
 		})
 	}, [params.id])
 
+	function updateAnswer(e) {
+		let newAnswers = [...answers]
+		newAnswers[e.target.name] = e.target.value
+		setAnswers(newAnswers)
+	}
+
+	function changeVersion(e) {
+		setViewVersion(e.target.value)
+	}
+
+	function send(e) {
+		let answerSheet = {
+			testId: id,
+			answers: answers
+		}
+		console.log(answerSheet)
+		e.preventDefault()
+	}
+
 	// Renders all the divs containing different types of questions
 	const questionsView = function() {
 		// Render nothing if test not loaded (there is no versions)
@@ -53,7 +72,7 @@ export default function TestView(props)
 							<label className="form-check-label">
 								<input onChange={updateAnswer} className="form-check-input" 
 										type="radio" name={i} value={n} />
-								{answers[n]}
+								{answers[n].split(";;")[0]}
 							</label>
 						</div>
 					)
@@ -79,25 +98,6 @@ export default function TestView(props)
 			)
 		})
 		return map
-	}
-
-	function updateAnswer(e) {
-		let newAnswers = [...answers]
-		newAnswers[e.target.name] = e.target.value
-		setAnswers(newAnswers)
-	}
-
-	function changeVersion(e) {
-		setViewVersion(e.target.value)
-	}
-
-	function send(e) {
-		let answerSheet = {
-			testId: id,
-			answers: answers
-		}
-		console.log(answerSheet)
-		e.preventDefault()
 	}
 
 	return (

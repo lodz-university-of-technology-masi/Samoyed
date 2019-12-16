@@ -1,9 +1,13 @@
 import React, { useState, useEffect, Component } from "react";
 import Loader from "../../components/Loader";
 import { func } from "prop-types";
+import { useHistory } from 'react-router'
+import apiRequest from "../../ApiRequest";
 
 export default function TestCreate(props)
 {
+    const history = useHistory()
+    const [uploading, setUploading] = useState(false)
     const [title, setTitle] = useState({"PL":"", "EN":""})
     const [version, setVersion] = useState("PL")
     const [questions, setQuestions] = useState({"PL": [], "EN": []})
@@ -16,29 +20,29 @@ export default function TestCreate(props)
                 for(var i = 0; i < props.edited.versions.length; i++){
                     setVersion(props.edited.versions[i].lang)
                     changeTitle(props.edited.versions[i].title, props.edited.versions[i].lang)
-                    
+
                     for(var j = 0; j < props.edited.versions[i].questions.length; j++){
                         if(i == 0){
                             appendQuestion()
                             changeType(j, props.edited.versions[i].questions[j].type)
                         }
-                        changeContent(j, 
-                            props.edited.versions[i].questions[j].content, 
+                        changeContent(j,
+                            props.edited.versions[i].questions[j].content,
                             props.edited.versions[i].lang)
                         if(props.edited.versions[i].questions[j].type == "W"){
                             for(var k = 0; k < props.edited.versions[i].questions[j].answers.length; k++){
-                                changeAnswersComplex(j, k, 
+                                changeAnswersComplex(j, k,
                                     props.edited.versions[i].questions[j].answers[k],
                                     props.edited.versions[i].lang)
                             }
                         } else {
-                            changeAnswersSimple(j, 
-                                props.edited.versions[i].questions[j].answers, 
+                            changeAnswersSimple(j,
+                                props.edited.versions[i].questions[j].answers,
                                 props.edited.versions[i].lang)
                         }
                     }
                 }
-                
+
             } else {
                 setQuestions({"PL": [], "EN": []})
             }
@@ -107,7 +111,7 @@ export default function TestCreate(props)
         newQuestions[version][n].answers = value;
         setQuestions(newQuestions)
     }
-    
+
     function changeAnswersSimple(n, value, ver) {
         let newQuestions = {...questions}
         newQuestions[ver][n].answers = value;
@@ -119,7 +123,7 @@ export default function TestCreate(props)
         newQuestions[version][n].answers[m].value = value;
         setQuestions(newQuestions)
     }
-    
+
     function changeAnswersComplex(n, m, value, ver) {
         let newQuestions = {...questions}
         newQuestions[ver][n].answers[m].value = value;
@@ -131,7 +135,7 @@ export default function TestCreate(props)
         newQuestions[version][n].answers[m].correct = value;
         setQuestions(newQuestions)
     }
-    
+
     function changeAnswersCorrect(n, m, value, ver) {
         let newQuestions = {...questions}
         newQuestions[ver][n].answers[m].correct = value;
@@ -143,7 +147,7 @@ export default function TestCreate(props)
         newTitle[version] = e.target.value;
         setTitle(newTitle)
     }
-    
+
     function changeTitle(newT, ver) {
         let newTitle = {...title}
         newTitle[ver] = newT;
@@ -174,6 +178,20 @@ export default function TestCreate(props)
                 })
             }
         }
+        setUploading(true)
+        apiRequest({
+            method: "POST",
+            path: "tests",
+            body: test,
+            success: function(res) {
+                // Redirect to /tests
+                history.push("/tests")
+            },
+            error: function(err) {
+                console.log(err)
+                // ??
+            }
+        })
         console.log(test)
     }
 
@@ -230,10 +248,13 @@ export default function TestCreate(props)
         )
     })
 
+    if (uploading) {
 
+        return <Loader><h3>Trwa zapisywanie...</h3></Loader>
+
+    } else {
     return (
-        (loaded) ? 
-            (<>
+        <>
         <div className="form-inline row mb-2">
             <select className="form-control" value={version} onChange={changeVersion}>
                 <option value="PL">PL</option>
@@ -252,9 +273,6 @@ export default function TestCreate(props)
             <button className="btn btn-primary col-12 mb-2" onClick={appendQuestion}>Dodaj pytanie</button>
             <button className="btn btn-primary col-12" onClick={send}>Zapisz</button>
         </div>
-        </>
-        )
-        : 
-        (<Loader><h1>Ładowanie...</h1></Loader>)
-	);
+        </>)
+    }
 }
