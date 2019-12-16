@@ -1,10 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, Component } from "react";
+import Loader from "../../components/Loader";
+import { func } from "prop-types";
 
-export default function TestCreate()
+export default function TestCreate(props)
 {
     const [title, setTitle] = useState({"PL":"", "EN":""})
     const [version, setVersion] = useState("PL")
     const [questions, setQuestions] = useState({"PL": [], "EN": []})
+	const [loaded, setLoaded] = useState(false)
+
+    useEffect(() => {
+
+        if(!loaded){
+            if(props.edited != undefined){
+                for(var i = 0; i < props.edited.versions.length; i++){
+                    setVersion(props.edited.versions[i].lang)
+                    changeTitle(props.edited.versions[i].title, props.edited.versions[i].lang)
+                    
+                    for(var j = 0; j < props.edited.versions[i].questions.length; j++){
+                        if(i == 0){
+                            appendQuestion()
+                            changeType(j, props.edited.versions[i].questions[j].type)
+                        }
+                        changeContent(j, 
+                            props.edited.versions[i].questions[j].content, 
+                            props.edited.versions[i].lang)
+                        if(props.edited.versions[i].questions[j].type == "W"){
+                            for(var k = 0; k < props.edited.versions[i].questions[j].answers.length; k++){
+                                changeAnswersComplex(j, k, 
+                                    props.edited.versions[i].questions[j].answers[k],
+                                    props.edited.versions[i].lang)
+                            }
+                        } else {
+                            changeAnswersSimple(j, 
+                                props.edited.versions[i].questions[j].answers, 
+                                props.edited.versions[i].lang)
+                        }
+                    }
+                }
+                
+            } else {
+                setQuestions({"PL": [], "EN": []})
+            }
+            setLoaded(true)
+        }
+    })
 
     function changeVersion(e) {
         setVersion(e.target.value)
@@ -56,9 +96,21 @@ export default function TestCreate()
         setQuestions(newQuestions)
     }
 
+    function changeContent(n, value, ver) {
+        let newQuestions = {...questions}
+        newQuestions[ver][n].content = value;
+        setQuestions(newQuestions)
+    }
+
     function changeAnswersSimple(n, value) {
         let newQuestions = {...questions}
         newQuestions[version][n].answers = value;
+        setQuestions(newQuestions)
+    }
+    
+    function changeAnswersSimple(n, value, ver) {
+        let newQuestions = {...questions}
+        newQuestions[ver][n].answers = value;
         setQuestions(newQuestions)
     }
 
@@ -67,16 +119,34 @@ export default function TestCreate()
         newQuestions[version][n].answers[m].value = value;
         setQuestions(newQuestions)
     }
+    
+    function changeAnswersComplex(n, m, value, ver) {
+        let newQuestions = {...questions}
+        newQuestions[ver][n].answers[m].value = value;
+        setQuestions(newQuestions)
+    }
 
     function changeAnswersCorrect(n, m, value) {
         let newQuestions = {...questions}
         newQuestions[version][n].answers[m].correct = value;
         setQuestions(newQuestions)
     }
+    
+    function changeAnswersCorrect(n, m, value, ver) {
+        let newQuestions = {...questions}
+        newQuestions[ver][n].answers[m].correct = value;
+        setQuestions(newQuestions)
+    }
 
     function changeTitle(e) {
         let newTitle = {...title}
         newTitle[version] = e.target.value;
+        setTitle(newTitle)
+    }
+    
+    function changeTitle(newT, ver) {
+        let newTitle = {...title}
+        newTitle[ver] = newT;
         setTitle(newTitle)
     }
 
@@ -160,7 +230,10 @@ export default function TestCreate()
         )
     })
 
-    return (<>
+
+    return (
+        (loaded) ? 
+            (<>
         <div className="form-inline row mb-2">
             <select className="form-control" value={version} onChange={changeVersion}>
                 <option value="PL">PL</option>
@@ -179,5 +252,9 @@ export default function TestCreate()
             <button className="btn btn-primary col-12 mb-2" onClick={appendQuestion}>Dodaj pytanie</button>
             <button className="btn btn-primary col-12" onClick={send}>Zapisz</button>
         </div>
-    </>)
+        </>
+        )
+        : 
+        (<Loader><h1>Ładowanie...</h1></Loader>)
+	);
 }

@@ -45,7 +45,7 @@ export default function Tests()
 								</td>
 								<td>{ new Date(test.createdOn).toLocaleDateString() }</td>
 								<td>
-									<Link to={"/test/" + test.id}>
+									<Link to={"/test/edit/" + test.id}>
 										<button className="btn btn-primary mr-1">Edytuj</button>
 									</Link>
 									<Link to={"/test/" + test.id}>
