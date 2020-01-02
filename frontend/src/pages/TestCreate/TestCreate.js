@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Component } from "react";
-import Loader from "../../components/Loader";
+import Loader from "../../components/UI/Loader/Loader";
 import { func } from "prop-types";
 import { useHistory } from 'react-router'
 import apiRequest from "../../ApiRequest";

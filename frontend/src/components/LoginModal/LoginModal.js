@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import "./LoginModal.css"
-import Loader from "../Loader"
+import Loader from "../UI/Loader/Loader"
 import apiRequest from "../../ApiRequest"
 import { useDispatch, useSelector } from 'react-redux'
 import { userLogIn } from '../../redux/actions/userLogIn'
@@ -69,7 +69,7 @@ export default function LoginModal() {
                                 : (<>
                                     <input type="text" id="login" className="fadeIn second" name="login" placeholder="Login"
                                             value={user.login} onChange={handleChange} />
-                                    <input type="text" id="password" className="fadeIn third" name="password" placeholder="Hasło"
+                                    <input type="password" id="password" className="fadeIn third" name="password" placeholder="Hasło"
                                             value={user.password} onChange={handleChange} />
                                     <input type="submit" className="fadeIn fourth" value="Zaloguj się" onClick={logIn} />
                                 </>)

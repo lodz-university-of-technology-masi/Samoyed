@@ -1,26 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Home.css";
-import { useSelector } from 'react-redux'
+import { useSelector } from "react-redux";
 import Profile from "../Profile/Profile";
+import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import apiRequest from "../../ApiRequest";
 
 export default function Home() {
-    
-    const state = useSelector(state => state)
+  const [testsList, setTestsList] = useState([]);
 
-    if (state.isLogged) {
-        
-        return <Profile />
-        
-    } else {
+  useEffect(() => {
+    apiRequest({
+      method: "GET",
+      path: "tests",
+      success: function(res) {
+        setTestsList(JSON.parse(res.responseText));
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  }, []);
 
-        return (
-            <div className="Home">
-                <div className="lander">
-                    <h1>Zaloguj się aby zobaczyć stronę domową.</h1>
-                </div>
-            </div>
-        );
+  const nrOfTests = Object.keys(testsList).length;
 
-    }
-    
+  return (
+    <div className="Home">
+      <div className="lander">
+        <h1>Witaj w naszej aplikacji!</h1>
+        <h2>Liczba dostępnych testów:</h2>
+        <p>
+          {nrOfTests} {nrOfTests >= 5 ? "testów" : "testy"}
+        </p>
+        <div>
+          <Link to="/login">
+            <Button className="lander__button" size="lg" variant="outline-info">
+              Zaloguj się
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
