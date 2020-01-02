@@ -8,28 +8,27 @@ import Logout from "../components/Logout/Logout";
 import { useSelector } from "react-redux";
 
 const TestCreate = React.lazy(() => {
-  return import('../pages/TestCreate/TestCreate');
+  return import("../pages/TestCreate/TestCreate");
 });
 
 const Tests = React.lazy(() => {
-  return import('../pages/Tests/Tests');
+  return import("../pages/Tests/Tests");
 });
 
 const TestLoader = React.lazy(() => {
-  return import('../pages/TestLoader/TestLoader');
+  return import("../pages/TestLoader/TestLoader");
 });
 
 const TestView = React.lazy(() => {
-  return import('../pages/TestView/TestView');
+  return import("../pages/TestView/TestView");
 });
 
 const Profile = React.lazy(() => {
-  return import('../pages/Profile/Profile');
+  return import("../pages/Profile/Profile");
 });
 
-const Routes = (props) => {
-
-  const isLogged = useSelector(state => state.isLogged);  
+const Routes = props => {
+  const isLogged = useSelector(state => state.isLogged);
 
   let routes = (
     <Switch>
@@ -38,27 +37,37 @@ const Routes = (props) => {
       <Route path="/login" exact component={SignUp} />
       <Route component={NotFound} />
     </Switch>
-  )
+  );
 
-  if(isLogged){
+  if (isLogged) {
     routes = (
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/team" exact component={Team} />
-        <Route path="/tests" exact render={(props) => <Tests {...props} />} />
-        <Route path="/test/create" exact render={(props) => <TestCreate {...props} />} />
-        <Route path="/test/edit/:id" exact render={(props) => <TestLoader {...props} />} />
-        <Route path="/test/:id" exact render={(props) => <TestView {...props} />} />
-        <Route path="/profile" exact render={(props) => <Profile {...props} />} />
+        <Route path="/tests" exact render={props => <Tests {...props} />} />
+        <Route
+          path="/test/create"
+          exact
+          render={props => <TestCreate {...props} />}
+        />
+        <Route
+          path="/test/edit/:id"
+          exact
+          render={props => <TestLoader {...props} />}
+        />
+        <Route
+          path="/test/:id"
+          exact
+          render={props => <TestView {...props} />}
+        />
+        <Route path="/profile" exact render={props => <Profile {...props} />} />
         <Route path="/logout" exact component={Logout} />
         <Route component={NotFound} />
       </Switch>
-    )
+    );
   }
 
-  return (
-    <Suspense fallback={<p>Ładowanie...</p>}>{routes}</Suspense>
-  );
-}
+  return <Suspense fallback={<p>Ładowanie...</p>}>{routes}</Suspense>;
+};
 
-export default Routes
+export default Routes;
