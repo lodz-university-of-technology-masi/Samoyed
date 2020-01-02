@@ -5,8 +5,9 @@ import apiRequest from "../../ApiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogIn } from "../../redux/actions/userLogIn";
 import { userLogOut } from "../../redux/actions/userLogOut";
+import { withRouter } from 'react-router-dom';
 
-export default function LoginModal() {
+function LoginModal(props) {
   const dispatch = useDispatch();
   const loggedUser = useSelector(state => state);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,7 @@ export default function LoginModal() {
         // ??
       }
     });
+    props.history.push("/")
     e.preventDefault();
   }
 
@@ -115,3 +117,5 @@ export default function LoginModal() {
     </div>
   );
 }
+
+export default withRouter(LoginModal);
