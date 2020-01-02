@@ -35,6 +35,7 @@ function LoginModal(props) {
         setIsLoading(false);
         let tokens = JSON.parse(res.responseText);
         dispatch(userLogIn(tokens, "DZIALAM"));
+        props.history.push("/")
       },
       error: function(err) {
         setIsLoading(false);
@@ -42,7 +43,6 @@ function LoginModal(props) {
         // ??
       }
     });
-    props.history.push("/")
     e.preventDefault();
   }
 
