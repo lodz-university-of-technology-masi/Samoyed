@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
-import Loader from "../../components/Loader";
+import Loader from "../../components/UI/Loader/Loader";
 import _ from 'underscore'
 
 export default function Tests()

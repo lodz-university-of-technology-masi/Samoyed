@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import apiRequest from "../../ApiRequest"
-import Loader from "../../components/Loader";
+import Loader from "../../components/UI/Loader/Loader";
 
 export default function TestView(props)
 {

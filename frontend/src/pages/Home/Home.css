@@ -15,4 +15,29 @@
   .lander{
     position: relative;
   }
+
+  .lander h2{
+    text-transform: none;
+    margin-top: 1rem;
+    color: #232f3e;
+  }
+
+  .lander p{
+    text-transform: none;
+    margin-top: 0.2rem;
+    color: #232f3e !important;
+    font-size: 4rem;
+  }
   
+  .lander__button{
+    margin-top: 2rem;
+    color: #232f3e !important;
+    border: solid 1px #232f3e !important;
+    box-sizing: border-box !important;
+  }
+
+  .lander__button:hover {
+    color: white !important;
+    border: none !important;
+    background-color: #232f3e !important;
+  }

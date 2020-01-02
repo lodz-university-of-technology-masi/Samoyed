@@ -8,6 +8,8 @@ import SignUp from "../pages/SignUp/SignUp";
 import Tests from "../pages/Tests/Tests";
 import TestView from "../pages/TestView/TestView";
 import TestCreate from "../pages/TestCreate/TestCreate";
+import Profile from "../pages/Profile/Profile";
+import Logout from "../components/Logout/Logout";
 
 export default function Routes() {
   return (
@@ -19,6 +21,8 @@ export default function Routes() {
       <Route path="/test/create" exact component={TestCreate} />
       <Route path="/test/edit/:id" exact component={TestLoader} />
       <Route path="/test/:id" exact component={TestView} />
+      <Route path="/profile" exact component={Profile} />
+      <Route path="/logout" exact component={Logout} />
       <Route component={NotFound} />
     </Switch>
   );
