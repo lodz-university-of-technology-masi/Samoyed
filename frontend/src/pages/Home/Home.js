@@ -7,6 +7,8 @@ import apiRequest from "../../ApiRequest";
 export default function Home() {
   const [testsList, setTestsList] = useState([]);
 
+  const isLogged = useSelector(state => state.isLogged);
+
   useEffect(() => {
     apiRequest({
       method: "GET",
@@ -32,9 +34,15 @@ export default function Home() {
         </p>
         <div>
           <Link to="/login">
-            <Button className="lander__button" size="lg" variant="outline-info">
-              Zaloguj się
-            </Button>
+            {!isLogged && (
+              <Button
+                className="lander__button"
+                size="lg"
+                variant="outline-info"
+              >
+                Zaloguj się
+              </Button>
+            )}
           </Link>
         </div>
       </div>

@@ -1,0 +1,29 @@
+.profile h2{
+    font-size: 2rem;
+    color: #232f3e;
+    text-transform: none;
+}
+
+.profile h3{
+    font-size: 1.5rem;
+    color: #232f3e;
+    text-transform: none;
+}
+
+.profile__line {
+    border: 2px solid #232f3e8a;
+}
+
+.profile__info h3 {
+    text-align: center;
+    background-color: #dbdcdd31;
+    padding: 0.4rem 0rem;
+    border-radius: 10px;
+}
+
+.profile__info p {
+    text-align: center;
+    padding: 0.4rem 0rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
