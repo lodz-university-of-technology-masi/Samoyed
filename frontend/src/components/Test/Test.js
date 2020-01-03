@@ -6,7 +6,7 @@ const Test = props => {
   const { i, createdOn, id, versions, deleteTest } = props;
 
   return (
-    <tr key={i}>
+    <tr>
       <td>
         {versions.map((v, j) => {
           return <div key={j}>{"[" + v.lang + "] " + v.title}</div>;

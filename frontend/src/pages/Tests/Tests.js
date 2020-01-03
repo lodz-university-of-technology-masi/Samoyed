@@ -72,7 +72,7 @@ export default function Tests() {
           {testsList.map((test, i) => {
             return (
               <Test
-                i={i}
+                key={i}
                 createdOn={test.createdOn}
                 id={test.id}
                 versions={test.versions}
