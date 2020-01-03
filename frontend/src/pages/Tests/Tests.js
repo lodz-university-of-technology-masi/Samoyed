@@ -5,6 +5,7 @@ import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
+import Test from "../../components/Test/Test";
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
@@ -70,27 +71,13 @@ export default function Tests() {
         <tbody>
           {testsList.map((test, i) => {
             return (
-              <tr key={i}>
-                <td>
-                  {test.versions.map((v, j) => {
-                    return <div key={j}>{"[" + v.lang + "] " + v.title}</div>;
-                  })}
-                </td>
-                <td>{new Date(test.createdOn).toLocaleDateString()}</td>
-                <td>
-                  <Link to={"/test/edit/" + test.id}>
-                    <button className="btn btn-primary mr-1">Edytuj</button>
-                  </Link>
-                  <button
-                    className="btn btn-danger"
-                    onClick={e => {
-                      deleteTest(test.id);
-                    }}
-                  >
-                    Usuń
-                  </button>
-                </td>
-              </tr>
+              <Test
+                i={i}
+                createdOn={test.createdOn}
+                id={test.id}
+                versions={test.versions}
+                deleteTest={() => deleteTest(test.id)}
+              />
             );
           })}
         </tbody>
