@@ -4,17 +4,20 @@ import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
+import { useSelector } from "react-redux";
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
   const [testsList, setTestsList] = useState([]);
+  const userId = useSelector(state => state.data.sub);
 
   useEffect(() => {
     apiRequest({
       method: "GET",
       path: "tests",
       success: function(res) {
-        setTestsList(JSON.parse(res.responseText));
+        console.log(JSON.parse(res.responseText));
+        setTestsList(assignTestsForUser(res));
         setLoaded(true);
       },
       error: function(err) {
@@ -23,6 +26,14 @@ export default function Tests() {
       }
     });
   }, []);
+
+  const assignTestsForUser = res => {
+    const loadedTests = JSON.parse(res.responseText);
+    const filteredTests = _.filter(loadedTests, t => {
+      return t.author === userId;
+    });
+    return filteredTests;
+  };
 
   function deleteTest(id) {
     let confirm = window.confirm("Czy na pewno chcesz usunąć test " + id + "?");
