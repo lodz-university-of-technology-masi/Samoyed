@@ -4,6 +4,7 @@ import { func } from "prop-types";
 import { useHistory } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -12,6 +13,8 @@ const TestCreate = props => {
   const [version, setVersion] = useState("PL");
   const [questions, setQuestions] = useState({ PL: [], EN: [] });
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorData, setErrorData] = useState({ msg: "", status: "" });
 
   useEffect(() => {
     if (!loaded) {
@@ -29,7 +32,6 @@ const TestCreate = props => {
               changeType(j, props.edited.versions[i].questions[j].type);
             }
             changeContentEdit(
-
               j,
               props.edited.versions[i].questions[j].content,
               props.edited.versions[i].lang
@@ -206,7 +208,8 @@ const TestCreate = props => {
       },
       error: function(err) {
         console.log(err);
-        // ??
+        setError(true);
+        setErrorData({ msg : JSON.parse(err.response).error, status: err.status })
       }
     });
     console.log(test);
@@ -292,11 +295,30 @@ const TestCreate = props => {
     );
   });
 
-  if (uploading) {
+  const handleClose = () => {
+    setError(false);
+    setUploading(false);
+  };
+
+  if (uploading && !error) {
     return (
       <Loader>
         <h3>Trwa zapisywanie...</h3>
       </Loader>
+    );
+  } else if (uploading && error) {
+    return (
+      <Modal show={error} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Błąd! Status: {errorData.status}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{errorData.msg}</Modal.Body>
+        <Modal.Footer>
+          <Button size="s" variant="primary" onClick={handleClose}>
+            Rozumiem
+          </Button>
+        </Modal.Footer>
+      </Modal>
     );
   } else {
     return (
