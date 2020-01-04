@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
 const Test = props => {
-  const { i, createdOn, id, versions, deleteTest } = props;
+  const { createdOn, id, versions, deleteTest } = props;
 
   return (
     <tr>
