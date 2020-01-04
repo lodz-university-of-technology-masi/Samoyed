@@ -29,6 +29,7 @@ const TestCreate = props => {
               changeType(j, props.edited.versions[i].questions[j].type);
             }
             changeContentEdit(
+
               j,
               props.edited.versions[i].questions[j].content,
               props.edited.versions[i].lang

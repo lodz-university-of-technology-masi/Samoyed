@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
-import { useSelector } from "react-redux";
-import Profile from "../Profile/Profile";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import apiRequest from "../../ApiRequest";
