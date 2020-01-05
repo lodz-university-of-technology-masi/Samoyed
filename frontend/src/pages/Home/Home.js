@@ -3,9 +3,12 @@ import "./Home.css";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import apiRequest from "../../ApiRequest";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const [testsList, setTestsList] = useState([]);
+
+  const isLogged = useSelector(state => state.isLogged);
 
   useEffect(() => {
     apiRequest({
@@ -32,9 +35,15 @@ export default function Home() {
         </p>
         <div>
           <Link to="/login">
-            <Button className="lander__button" size="lg" variant="outline-info">
-              Zaloguj się
-            </Button>
+            {!isLogged && (
+              <Button
+                className="lander__button"
+                size="lg"
+                variant="outline-info"
+              >
+                Zaloguj się
+              </Button>
+            )}
           </Link>
         </div>
       </div>
