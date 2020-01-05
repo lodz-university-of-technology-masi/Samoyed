@@ -5,6 +5,7 @@ import { useHistory } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
+import ErrorModal from '../../components/ErrorModal/ErrorModal'
 
 const TestCreate = props => {
   const history = useHistory();
@@ -308,17 +309,12 @@ const TestCreate = props => {
     );
   } else if (uploading && error) {
     return (
-      <Modal show={error} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Błąd! Status: {errorData.status}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{errorData.msg}</Modal.Body>
-        <Modal.Footer>
-          <Button size="s" variant="primary" onClick={handleClose}>
-            Rozumiem
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ErrorModal 
+        err={error} 
+        click={handleClose} 
+        status={errorData.status} 
+        msg={errorData.msg} 
+      />
     );
   } else {
     return (
