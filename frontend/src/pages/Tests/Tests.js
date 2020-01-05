@@ -17,7 +17,6 @@ export default function Tests() {
       method: "GET",
       path: "tests",
       success: function(res) {
-        console.log(JSON.parse(res.responseText));
         setTestsList(assignTestsForUser(res));
         setLoaded(true);
       },

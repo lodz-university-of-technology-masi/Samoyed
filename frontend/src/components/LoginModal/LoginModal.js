@@ -5,7 +5,8 @@ import apiRequest from "../../ApiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogIn } from "../../redux/actions/userLogIn";
 import { userLogOut } from "../../redux/actions/userLogOut";
-import { withRouter } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 function LoginModal(props) {
   const dispatch = useDispatch();
@@ -15,6 +16,8 @@ function LoginModal(props) {
     login: "",
     password: ""
   });
+
+  const [mode, setMode] = useState("login");
 
   function handleChange(e) {
     let newUser = { ...user };
@@ -35,7 +38,7 @@ function LoginModal(props) {
         setIsLoading(false);
         let tokens = JSON.parse(res.responseText);
         dispatch(userLogIn(tokens, "DZIALAM"));
-        props.history.push("/")
+        props.history.push("/");
       },
       error: function(err) {
         setIsLoading(false);
@@ -51,9 +54,14 @@ function LoginModal(props) {
     e.preventDefault();
   }
 
+  const handleModeChange = () => {
+    mode === "login" ? setMode("registration") : setMode("login");
+  };
+
   return (
     <div className="wrapper fadeInDown">
       <div id="formContent">
+        <h2>{mode === "login" ? `Logowanie` : `Rejestracja`}</h2>
         <div className="fadeIn first">
           <img
             alt="person icon"
@@ -100,7 +108,7 @@ function LoginModal(props) {
                 <input
                   type="submit"
                   className="fadeIn fourth"
-                  value="Zaloguj się"
+                  value={mode === "login" ? `Zaloguj się` : `Zarejestruj się`}
                   onClick={logIn}
                 />
               </>
@@ -109,9 +117,9 @@ function LoginModal(props) {
         )}
 
         <div id="formFooter">
-          <a className="underlineHover" href="/">
-            Zapomniałeś hasła?
-          </a>
+          <Button size="sm" onClick={handleModeChange}>
+            {mode === "login" ? `Zarejestruj sie` : `Zaloguj się`}
+          </Button>
         </div>
       </div>
     </div>
