@@ -17,7 +17,7 @@ function LoginModal(props) {
     password: ""
   });
 
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState("signin");
 
   function handleChange(e) {
     let newUser = { ...user };
@@ -27,25 +27,43 @@ function LoginModal(props) {
 
   function logIn(e) {
     setIsLoading(true);
-    apiRequest({
-      method: "POST",
-      path: "user/signin/",
-      body: {
-        username: user.login,
-        password: user.password
-      },
-      success: function(res) {
-        setIsLoading(false);
-        let tokens = JSON.parse(res.responseText);
-        dispatch(userLogIn(tokens, "DZIALAM"));
-        props.history.push("/");
-      },
-      error: function(err) {
-        setIsLoading(false);
-        alert("SOMETHING IS NOT QUITE RIGHT...");
-        // ??
-      }
-    });
+    if(mode === 'signin'){
+      apiRequest({
+        method: "POST",
+        path: `user/${mode}/`,
+        body: {
+          username: user.login,
+          password: user.password
+        },
+        success: function(res) {
+          setIsLoading(false);
+          let tokens = JSON.parse(res.responseText);
+          dispatch(userLogIn(tokens, "DZIALAM"));
+          props.history.push("/");
+        },
+        error: function(err) {
+          setIsLoading(false);
+          alert("SOMETHING IS NOT QUITE RIGHT...");
+          // ??
+        }
+      });
+    } else {
+      apiRequest({
+        method: "POST",
+        path: `user/${mode}`,
+        body: {
+          email: user.login,
+          password: user.password
+        },
+        success: function(res){
+          props.history.push('/')
+        },
+        error: function(err){
+          console.log(err);
+        }
+      })
+    }
+    
     e.preventDefault();
   }
 
@@ -55,13 +73,13 @@ function LoginModal(props) {
   }
 
   const handleModeChange = () => {
-    mode === "login" ? setMode("registration") : setMode("login");
+    mode === "signin" ? setMode("signup") : setMode("signin");
   };
 
   return (
     <div className="wrapper fadeInDown">
       <div id="formContent">
-        <h2>{mode === "login" ? `Logowanie` : `Rejestracja`}</h2>
+        <h2>{mode === "signin" ? `Logowanie` : `Rejestracja`}</h2>
         <div className="fadeIn first">
           <img
             alt="person icon"
@@ -108,7 +126,7 @@ function LoginModal(props) {
                 <input
                   type="submit"
                   className="fadeIn fourth"
-                  value={mode === "login" ? `Zaloguj się` : `Zarejestruj się`}
+                  value={mode === "signin" ? `Zaloguj się` : `Zarejestruj się`}
                   onClick={logIn}
                 />
               </>
@@ -118,7 +136,7 @@ function LoginModal(props) {
 
         <div id="formFooter">
           <Button size="sm" className="registration" onClick={handleModeChange}>
-            {mode === "login" ? `Zarejestruj sie` : `Zaloguj się`}
+            {mode === "signin" ? `Zarejestruj sie` : `Zaloguj się`}
           </Button>
         </div>
       </div>
