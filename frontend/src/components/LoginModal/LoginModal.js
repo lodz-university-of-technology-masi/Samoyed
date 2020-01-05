@@ -117,7 +117,7 @@ function LoginModal(props) {
         )}
 
         <div id="formFooter">
-          <Button size="sm" onClick={handleModeChange}>
+          <Button size="sm" className="registration" onClick={handleModeChange}>
             {mode === "login" ? `Zarejestruj sie` : `Zaloguj się`}
           </Button>
         </div>

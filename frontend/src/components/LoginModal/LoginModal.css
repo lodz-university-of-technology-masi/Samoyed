@@ -36,8 +36,16 @@
     border-radius: 0 0 10px 10px;
   }
   
+  .registration{
+    background-color: #f6f6f6 !important;
+    color: #0069d9 !important;
+    border: none !important;
+  }
   
-  
+  .registration:active{
+    border: none !important;
+  }
+
   /* TABS */
   
   h2.inactive {
@@ -48,8 +56,6 @@
     color: #0d0d0d;
     border-bottom: 2px solid #5fbae9;
   }
-  
-  
   
   /* FORM TYPOGRAPHY*/
   
