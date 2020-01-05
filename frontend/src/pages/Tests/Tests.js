@@ -6,11 +6,14 @@ import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
 import Test from "../../components/Test/Test";
+import ErrorModal from '../../components/ErrorModal/ErrorModal'
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
   const [testsList, setTestsList] = useState([]);
   const userId = useSelector(state => state.data.sub);
+  const [error, setError] = useState(false);
+  const [errorData, setErrorData] = useState({ msg: "", status: "" });
 
   useEffect(() => {
     apiRequest({
@@ -22,10 +25,15 @@ export default function Tests() {
       },
       error: function(err) {
         console.log(err);
-        // ??
+        setError(true);
+        setErrorData({ msg : JSON.parse(err.response).error, status: err.status });
       }
     });
   }, []);
+
+  const handleClose = () => {
+    setError(false);
+  };
 
   const assignTestsForUser = res => {
     const loadedTests = JSON.parse(res.responseText);
@@ -51,14 +59,30 @@ export default function Tests() {
         },
         error: function(err) {
           console.log(err);
-          // ??
+          setError(true);
+          setErrorData({ msg : JSON.parse(err.response).error, status: err.status });
         }
       });
     }
   }
 
-  return loaded ? (
-    <>
+  if (!loaded && !error) {
+    return (
+      <Loader>
+        <h1>Ładowanie...</h1>
+      </Loader>
+    )
+  } else if (loaded && error) {
+    return (<ErrorModal 
+        err={error} 
+        click={handleClose} 
+        status={errorData.status} 
+        msg={errorData.msg} 
+      />
+    )
+  } else {
+    return (
+      <>
       <table className="table">
         <thead>
           <tr>
@@ -85,9 +109,6 @@ export default function Tests() {
         <button className="btn btn-primary col-12">Dodaj nowy test</button>
       </Link>
     </>
-  ) : (
-    <Loader>
-      <h1>Ładowanie...</h1>
-    </Loader>
-  );
+    )
+  }
 }
