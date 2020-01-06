@@ -1,11 +1,11 @@
 import React, { useState, useEffect, Component } from "react";
 import Loader from "../../components/UI/Loader/Loader";
 import { func } from "prop-types";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import ErrorModal from '../../components/ErrorModal/ErrorModal'
+import ErrorModal from "../../components/ErrorModal/ErrorModal";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -16,6 +16,7 @@ const TestCreate = props => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [errorData, setErrorData] = useState({ msg: "", status: "" });
+  const params = useParams();
 
   useEffect(() => {
     if (!loaded) {
@@ -199,20 +200,45 @@ const TestCreate = props => {
       }
     }
     setUploading(true);
-    apiRequest({
-      method: "POST",
-      path: "tests",
-      body: test,
-      success: function(res) {
-        // Redirect to /tests
-        history.push("/tests");
-      },
-      error: function(err) {
-        console.log(err);
-        setError(true);
-        setErrorData({ msg : JSON.parse(err.response).error, status: err.status })
-      }
-    });
+    if (props.edited === undefined) {
+      apiRequest({
+        method: "POST",
+        path: "tests",
+        body: test,
+        success: function(res) {
+          // Redirect to /tests
+          history.push("/tests");
+        },
+        error: function(err) {
+          console.log(err);
+          setError(true);
+          setErrorData({
+            msg: JSON.parse(err.response).error,
+            status: err.status
+          });
+        }
+      });
+    } else {
+      // apiRequest({
+      //   method: "GET",
+      //   path: `tests/id/${params.id}`,
+      //   body: test,
+      //   success: function(res) {
+      //     // Redirect to /tests
+      //     console.log(JSON.parse(res.responseText));
+      //   },
+      //   error: function(err) {
+      //     console.log(err);
+      //     setError(true);
+      //     setErrorData({
+      //       msg: JSON.parse(err.response).error,
+      //       status: err.status
+      //     });
+      //   }
+      // });
+      console.log("create lambda plz")
+    }
+
     console.log(test);
   }
 
@@ -309,11 +335,11 @@ const TestCreate = props => {
     );
   } else if (uploading && error) {
     return (
-      <ErrorModal 
-        err={error} 
-        click={handleClose} 
-        status={errorData.status} 
-        msg={errorData.msg} 
+      <ErrorModal
+        err={error}
+        click={handleClose}
+        status={errorData.status}
+        msg={errorData.msg}
       />
     );
   } else {
