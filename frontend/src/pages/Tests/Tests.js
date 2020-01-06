@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
 import Test from "../../components/Test/Test";
-import ErrorModal from '../../components/ErrorModal/ErrorModal'
+import ErrorModal from "../../components/ErrorModal/ErrorModal";
+import RecruiterTestPanel from "../../components/UI/RecruiterTestPanel/RecruiterTestPanel";
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
@@ -26,7 +26,10 @@ export default function Tests() {
       error: function(err) {
         console.log(err);
         setError(true);
-        setErrorData({ msg : JSON.parse(err.response).error, status: err.status });
+        setErrorData({
+          msg: JSON.parse(err.response).error,
+          status: err.status
+        });
       }
     });
   }, []);
@@ -60,7 +63,10 @@ export default function Tests() {
         error: function(err) {
           console.log(err);
           setError(true);
-          setErrorData({ msg : JSON.parse(err.response).error, status: err.status });
+          setErrorData({
+            msg: JSON.parse(err.response).error,
+            status: err.status
+          });
         }
       });
     }
@@ -71,44 +77,22 @@ export default function Tests() {
       <Loader>
         <h1>Ładowanie...</h1>
       </Loader>
-    )
+    );
   } else if (loaded && error) {
-    return (<ErrorModal 
-        err={error} 
-        click={handleClose} 
-        status={errorData.status} 
-        msg={errorData.msg} 
+    return (
+      <ErrorModal
+        err={error}
+        click={handleClose}
+        status={errorData.status}
+        msg={errorData.msg}
       />
-    )
+    );
   } else {
     return (
-      <>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Tytuł</th>
-            <th>Utworzono</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          {testsList.map((test, i) => {
-            return (
-              <Test
-                key={i}
-                createdOn={test.createdOn}
-                id={test.id}
-                versions={test.versions}
-                deleteTest={() => deleteTest(test.id)}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-      <Link to="/test/create" className="row">
-        <button className="btn btn-primary col-12">Dodaj nowy test</button>
-      </Link>
-    </>
-    )
+      <RecruiterTestPanel
+        deleteTest={id => deleteTest(id)}
+        testsList={testsList}
+      />
+    );
   }
 }
