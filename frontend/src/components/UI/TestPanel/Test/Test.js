@@ -45,8 +45,8 @@ const Test = props => {
           return <div key={j}>{"[" + v.lang + "] " + v.title}</div>;
         })}
       </td>
-      <td>{new Date(createdOn).toLocaleDateString()}</td>
-      <td>
+      <td align="center">{new Date(createdOn).toLocaleDateString()}</td>
+      <td align="center">
         <div className="table__content">
           { userGroup === 'recruiters' ? renderRecruitersButtons() : renderCandidatesButtons()}
         </div>
