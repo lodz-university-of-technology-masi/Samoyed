@@ -8,7 +8,6 @@ import './TestsPanel.css';
 
 const TestPanel = (props) => {
     const {testsList, deleteTest} = props;
-    
     const userGroup = useSelector(state => state.data['cognito:groups'][0]);
     return (
         <>
@@ -38,7 +37,6 @@ const TestPanel = (props) => {
         <Link to="/test/create" className="row">
           { userGroup === 'recruiters' && <button className="btn btn-primary col-12">Dodaj nowy test</button> }
         </Link>
-        
       </>
     )
 }
