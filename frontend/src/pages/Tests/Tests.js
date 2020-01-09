@@ -89,10 +89,7 @@ export default function Tests() {
     );
   } else {
     return (
-      <TestPanel
-        deleteTest={id => deleteTest(id)}
-        testsList={testsList}
-      />
+      <TestPanel deleteTest={id => deleteTest(id)} testsList={testsList} />
     );
   }
 }
