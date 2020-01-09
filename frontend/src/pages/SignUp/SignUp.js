@@ -3,7 +3,6 @@ import "./SignUp.css";
 import LoginModal from "../../components/LoginModal/LoginModal";
 
 export default function SignUp() {
-  const [mode, setMode] = useState(false);
 
   return (
     <div className="SignUp">
