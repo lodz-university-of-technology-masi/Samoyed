@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import Test from './Test/Test';
 import { useSelector } from 'react-redux';
+import './TestsPanel.css';
 
 const TestPanel = (props) => {
     const {testsList, deleteTest} = props;

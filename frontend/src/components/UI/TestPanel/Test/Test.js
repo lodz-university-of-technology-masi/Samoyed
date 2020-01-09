@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import './Test.css'
 
 const Test = props => {
-  const { createdOn, id, versions, deleteTest, userGroup} = props;
+  const { createdOn, id, versions, deleteTest, userGroup, assignToUser} = props;
 
   const renderCandidatesButtons = () => {
     return (
@@ -27,6 +28,12 @@ const Test = props => {
         >
           Usuń
         </Button>
+        <Button className="btn btn-success ml-1"
+        onClick={e => {
+          assignToUser();
+        }}>
+          Dodaj kandydata
+        </Button>
       </>
     ) 
   }
@@ -40,7 +47,9 @@ const Test = props => {
       </td>
       <td>{new Date(createdOn).toLocaleDateString()}</td>
       <td>
-        { userGroup === 'recruiters' ? renderRecruitersButtons() : renderCandidatesButtons()}
+        <div className="table__content">
+          { userGroup === 'recruiters' ? renderRecruitersButtons() : renderCandidatesButtons()}
+        </div>
       </td>
     </tr>
   );
