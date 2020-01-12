@@ -72,6 +72,25 @@ export default function Tests() {
     }
   }
 
+  function refreshTest() {
+    apiRequest({
+      method: "GET",
+      path: "tests",
+      success: function(res) {
+        setTestsList(assignTestsForUser(res));
+        setLoaded(true);
+      },
+      error: function(err) {
+        console.log(err);
+        setError(true);
+        setErrorData({
+          msg: JSON.parse(err.response).error,
+          status: err.status
+        });
+      }
+    });
+  }
+
   if (!loaded && !error) {
     return (
       <Loader>
@@ -91,6 +110,7 @@ export default function Tests() {
     return (
       <RecruiterTestPanel
         deleteTest={id => deleteTest(id)}
+        refreshTest={() => refreshTest()}
         testsList={testsList}
       />
     );

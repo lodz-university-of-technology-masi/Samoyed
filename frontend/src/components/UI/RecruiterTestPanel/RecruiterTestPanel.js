@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Test from '../../Test/Test';
 
 const RecruiterTestPanel = (props) => {
-    const {testsList, deleteTest} = props;
+    const {testsList, deleteTest, refreshTest} = props;
 
     return (
         <>
@@ -32,6 +32,16 @@ const RecruiterTestPanel = (props) => {
         <Link to="/test/create" className="row">
           <button className="btn btn-primary col-12">Dodaj nowy test</button>
         </Link>
+        <div className="row">
+        <button
+          className="btn btn-danger col-12"
+          onClick={e => {
+            refreshTest();
+          }}
+        >
+          Odśwież testy
+        </button>
+        </div>
       </>
     )
 }
