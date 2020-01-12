@@ -43,6 +43,31 @@ public class RecruitmentTests {
 
     }
 
+    public Response update(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String testId = (String) req.getPathParameters().get("id");
+                    Test test = mapper.load(Test.class, testId);
+                    if (test == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("recruiters")) {
+                        test = om.readValue(req.getBody(), Test.class);
+                        test.setAuthor(user.getUserId());
+                        test.setCreatedOn(System.currentTimeMillis());
+                        test.setId(testId);
+                        mapper.save(test);
+                        res.body = om.writeValueAsString(test);
+                        res.statusCode = 204;
+                    } else {
+                        throw new ApiException("You must be recruiter to perform this action.");
+                    }
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+    }
+
     public Response fetch(Map<String, Object> input, Context context) {
 
         return new ResponseBuilder()

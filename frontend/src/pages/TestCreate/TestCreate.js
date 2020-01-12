@@ -219,27 +219,24 @@ const TestCreate = props => {
         }
       });
     } else {
-      // apiRequest({
-      //   method: "GET",
-      //   path: `tests/id/${params.id}`,
-      //   body: test,
-      //   success: function(res) {
-      //     // Redirect to /tests
-      //     console.log(JSON.parse(res.responseText));
-      //   },
-      //   error: function(err) {
-      //     console.log(err);
-      //     setError(true);
-      //     setErrorData({
-      //       msg: JSON.parse(err.response).error,
-      //       status: err.status
-      //     });
-      //   }
-      // });
-      console.log("create lambda plz")
+      apiRequest({
+        method: "PUT",
+        path: `tests/id/${params.id}`,
+        body: test,
+        success: function(res) {
+          // Redirect to /tests
+          history.push('/tests')
+        },
+        error: function(err) {
+          console.log(err);
+          setError(true);
+          setErrorData({
+            msg: JSON.parse(err.response).error,
+            status: err.status
+          });
+        }
+      });
     }
-
-    console.log(test);
   }
 
   const handleClose = () => {
