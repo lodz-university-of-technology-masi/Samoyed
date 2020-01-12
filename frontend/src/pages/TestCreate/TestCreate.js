@@ -4,8 +4,8 @@ import { func } from "prop-types";
 import { useHistory, useParams } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
+import Questions from "../../components/Questions/Questions";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -242,86 +242,6 @@ const TestCreate = props => {
     console.log(test);
   }
 
-  // Renders block of modifiable questions
-  const questionList = questions[version].map((q, i) => {
-    // Depending on question type, this renders different blocks for possible answers
-    let answersBlock;
-    if (q.type === "W") {
-      answersBlock = [];
-      for (let m = 0; m < 4; m++) {
-        answersBlock.push(
-          <>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              onChange={e => {
-                changeAnswersCorrectCreation(i, m, e.target.checked);
-              }}
-              checked={q.answers[m].correct}
-            />
-            <input
-              className="form-control mr-2"
-              placeholder={"Odpowiedź " + (m + 1)}
-              onChange={e => {
-                changeAnswersComplexCreation(i, m, e.target.value);
-              }}
-              value={q.answers[m].value}
-            />
-          </>
-        );
-      }
-      answersBlock = (
-        <div className="form-group form-inline row">{answersBlock}</div>
-      );
-    } else {
-      answersBlock = (
-        <div className="form-group row">
-          <input
-            className="form-control"
-            placeholder="Odpowiedzi"
-            value={q.answers}
-            onChange={e => {
-              changeAnswersSimpleCreation(i, e.target.value);
-            }}
-          />
-        </div>
-      );
-    }
-    return (
-      <div key={i}>
-        <div className="form-inline row" key={i}>
-          <input
-            className="form-control mr-2 mb-2"
-            placeholder="Pytanie"
-            value={q.content}
-            onChange={e => {
-              changeContentCreation(i, e.target.value);
-            }}
-          />
-          <select
-            className="form-control mr-2 mb-2"
-            value={q.type}
-            onChange={e => {
-              changeType(i, e.target.value);
-            }}
-          >
-            <option value="W">Wyboru</option>
-            <option value="O">Otwarte</option>
-            <option value="L">Liczbowe</option>
-          </select>
-          <button
-            className="btn btn-danger mr-2 mb-2"
-            onClick={deleteQuestion}
-            name={i}
-          >
-            Usuń
-          </button>
-        </div>
-        {answersBlock}
-      </div>
-    );
-  });
-
   const handleClose = () => {
     setError(false);
     setUploading(false);
@@ -368,7 +288,15 @@ const TestCreate = props => {
             zignorowana.
           </small>
         </div>
-        {questionList}
+        <Questions 
+          questions={questions[version]} 
+          changeAnswersCorrectCreation={changeAnswersCorrectCreation}
+          changeAnswersComplexCreation={changeAnswersComplexCreation}
+          changeAnswersSimpleCreation={changeAnswersSimpleCreation}
+          changeContentCreation={changeContentCreation}
+          changeType={changeType}
+          deleteQuestion={deleteQuestion}
+        />
         <div className="form-group row">
           <button
             className="btn btn-primary col-12 mb-2"

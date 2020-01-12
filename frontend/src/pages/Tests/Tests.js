@@ -4,9 +4,9 @@ import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
-import Test from "../../components/Test/Test";
+import Test from "../../components/UI/TestPanel/Test/Test";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
-import RecruiterTestPanel from "../../components/UI/RecruiterTestPanel/RecruiterTestPanel";
+import TestPanel from "../../components/UI/TestPanel/TestsPanel";
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
@@ -108,7 +108,7 @@ export default function Tests() {
     );
   } else {
     return (
-      <RecruiterTestPanel
+      <TestPanel
         deleteTest={id => deleteTest(id)}
         refreshTest={() => refreshTest()}
         testsList={testsList}

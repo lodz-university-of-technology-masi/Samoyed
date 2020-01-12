@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import Test from '../../Test/Test';
+import Test from './Test/Test';
+import { useSelector } from 'react-redux';
+import './TestsPanel.css';
 
-const RecruiterTestPanel = (props) => {
+
+
+const TestPanel = (props) => {
     const {testsList, deleteTest, refreshTest} = props;
-
+    const userGroup = useSelector(state => state.data['cognito:groups'][0]);
     return (
         <>
         <table className="table">
@@ -19,6 +23,7 @@ const RecruiterTestPanel = (props) => {
             {testsList.map((test, i) => {
               return (
                 <Test
+                  userGroup={userGroup}
                   key={i}
                   createdOn={test.createdOn}
                   id={test.id}
@@ -30,7 +35,7 @@ const RecruiterTestPanel = (props) => {
           </tbody>
         </table>
         <Link to="/test/create" className="row">
-          <button className="btn btn-primary col-12">Dodaj nowy test</button>
+          { userGroup === 'recruiters' && <button className="btn btn-primary col-12">Dodaj nowy test</button> }
         </Link>
         <div className="row">
         <button
@@ -46,4 +51,4 @@ const RecruiterTestPanel = (props) => {
     )
 }
 
-export default RecruiterTestPanel
+export default TestPanel
