@@ -44,9 +44,7 @@ function lookForWords(text, lan) {
                                syn.push(mean[k].text)
                         }
                         else syn.push(mean.text)
-                    
                     }
-                  
                 }
             }
             
@@ -56,6 +54,7 @@ function lookForWords(text, lan) {
     return syn;
 
 }
+
 
 export default function monitorSynonyms(id){
     document.onmouseup = document.onkeyup = document.onselectionchange = function() {
