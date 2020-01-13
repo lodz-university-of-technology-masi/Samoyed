@@ -5,16 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupRequest;
-import com.amazonaws.services.cognitoidp.model.AdminAddUserToGroupResult;
-import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpRequest;
-import com.amazonaws.services.cognitoidp.model.AdminConfirmSignUpResult;
-import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
-import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
-import com.amazonaws.services.cognitoidp.model.AttributeType;
-import com.amazonaws.services.cognitoidp.model.AuthFlowType;
-import com.amazonaws.services.cognitoidp.model.SignUpRequest;
-import com.amazonaws.services.cognitoidp.model.SignUpResult;
+import com.amazonaws.services.cognitoidp.model.*;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.lodz.p.samoyed.model.Credentials;
@@ -123,6 +114,46 @@ public class UsersManagement {
         confirmRequest.setUserPoolId(cognitoConfig.getUserPoolId());
         confirmRequest.setUsername(username);
         return cognitoIdentityProvider.adminConfirmSignUp(confirmRequest);
+    }
+
+
+    public Response updateUserAttributes(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String body = (String) input.get("body");
+                    Map<String, String> attributes = (Map<String, String>) om.readValue(body, Map.class);
+
+                    AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+
+                    AdminUpdateUserAttributesRequest updateRequest = new AdminUpdateUserAttributesRequest();
+                    updateRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+                    updateRequest.setUsername(attributes.get("email"));
+
+                    if (updateRequest.getUsername() == null) {
+                        throw new ApiException("Couldn't get username.", 404);
+                    }
+
+                    List<AttributeType> cognitoAttrs = new LinkedList<>();
+                    for (Map.Entry<String, String> i : attributes.entrySet()) {
+                        if (!i.getKey().equals("email") && !i.getKey().equals("password")) {
+                            cognitoAttrs.add(new AttributeType()
+                                    .withName(i.getKey())
+                                    .withValue(i.getValue()));
+                        }
+                    }
+
+                    if (cognitoAttrs.get(0) == null) {
+                        throw new ApiException("Couldn't get attributes.", 404);
+                    }
+
+                    updateRequest.setUserAttributes(cognitoAttrs);
+                    cognitoIdentityProvider.adminUpdateUserAttributes(updateRequest);
+
+                    res.body = om.writeValueAsString(cognitoAttrs);
+                    res.statusCode = 204;
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
     }
 
 }
