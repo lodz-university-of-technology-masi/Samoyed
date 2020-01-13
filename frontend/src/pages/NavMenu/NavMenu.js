@@ -32,7 +32,7 @@ const NavMenu = props => {
 
   return (
     <>
-      <Navbar id="mainNav" bg="light" expand="lg" fluid collapseOnSelect>
+      <Navbar id="mainNav" bg="light" expand="lg" collapseOnSelect>
         <div className="App container">
           <Navbar.Brand>
             <Link to="/">
@@ -41,7 +41,7 @@ const NavMenu = props => {
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse>
-            <Nav className="ml-auto" pullRight>
+            <Nav className="ml-auto">
               {authLinks}
               <LinkContainer to="/team">
                 <NavItem>Zespół</NavItem>

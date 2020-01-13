@@ -6,6 +6,7 @@ import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import Questions from "../../components/Questions/Questions";
+import translate from "../../Languages/Translator";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -280,7 +281,7 @@ const TestCreate = props => {
             onChange={changeTitleCreation}
             value={title[version]}
           />
-          <small id="passwordHelpBlock" class="form-text text-muted">
+          <small id="passwordHelpBlock" className="form-text text-muted">
             Jeśli pozostawisz to pole puste, wybrana wersja językowa zostanie
             zignorowana.
           </small>
