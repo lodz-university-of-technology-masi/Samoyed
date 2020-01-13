@@ -15,7 +15,7 @@ const TestPanel = (props) => {
           <thead>
             <tr>
               <th>Tytuł</th>
-              <th>Utworzono</th>
+              <th>Ostatnia modyfikacja:</th>
               <th>Akcje</th>
             </tr>
           </thead>
