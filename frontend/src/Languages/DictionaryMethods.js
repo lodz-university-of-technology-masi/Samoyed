@@ -6,15 +6,16 @@ export function httpGet(theUrl)
     return xmlHttp.responseText;
 }
 
-const translatorKey =  'trnsl.1.1.20200113T001347Z.da05fe3bfdc667ea.0fa6c688d13c416ed1cab21b1216064d4e6c7224';
+export const translatorKey =  'trnsl.1.1.20200113T001347Z.da05fe3bfdc667ea.0fa6c688d13c416ed1cab21b1216064d4e6c7224';
+export const dictionaryKey = 'dict.1.1.20200109T012204Z.51919f04f8ff840e.c6b9dc7ca3cae0772e01a50cd495491e0f8a686b'
 
 //returns the language the text is written
 export function detectLang (text)  {
     const response = `https://translate.yandex.net/api/v1.5/tr.json/detect?key=${translatorKey}&text=${text}`;
     let json = httpGet(response);
-    let output = JSON.parse(json);
+    let input = JSON.parse(json);
     //console.log(output);
-    return output.lang;
+    return input.lang;
 
 }
 
