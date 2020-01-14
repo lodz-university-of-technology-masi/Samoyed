@@ -1,5 +1,6 @@
-import { USER_LOGIN } from '../actions/userLogIn'
-import { USER_LOGOUT } from '../actions/userLogOut'
+import { USER_LOGIN } from '../actions/userLogIn';
+import { USER_LOGOUT } from '../actions/userLogOut';
+import { USER_UPDATE } from '../actions/userUpdate';
 import jwt from 'jsonwebtoken'
 
 const NULL_STATE = {
@@ -33,9 +34,23 @@ const userReducer = (state = INITIAL_STATE, action) => {
             // Destroy data in localStorage
             localStorage.removeItem("user")
             return {...NULL_STATE}
+        case USER_UPDATE:
+            const { given_name, family_name, gender, email } = action.data
+            let updatedUserState = {
+                ...state,
+                data: {
+                    ...state.data,
+                    given_name,
+                    family_name,
+                    gender,
+                    email
+                }
+            }
+            return updatedUserState    
         default:
             return state
     }
 }
+
 
 export default userReducer
