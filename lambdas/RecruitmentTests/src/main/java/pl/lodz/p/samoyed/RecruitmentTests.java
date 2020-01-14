@@ -10,6 +10,7 @@ import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import pl.lodz.p.samoyed.model.SolvedTest;
 import pl.lodz.p.samoyed.model.Test;
 import pl.lodz.p.samoyed.model.TestContent;
 
@@ -118,6 +119,84 @@ public class RecruitmentTests {
                         .withExpectedEntry("Author", userId);
                 mapper.delete(test, expr);
             }).handle();
+
+    }
+
+    public Response addSolvedTest(Map<String, Object> input, Context context) {
+
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    res.headers.put("Content-type", "application/json");
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("candidates")) {
+                        SolvedTest solvedTest = om.readValue(req.getBody(), SolvedTest.class);
+                        solvedTest.setSolvedBy(user.getUserId());
+                        solvedTest.setSolvedOn(System.currentTimeMillis());
+                        mapper.save(solvedTest);
+                        res.body = om.writeValueAsString(solvedTest);
+                        res.statusCode = 201;
+                    } else {
+                        throw new ApiException("You must be candidate to perform this action.");
+                    }
+                }).handle();
+
+    }
+
+    public Response fetchSolvedTest(Map<String, Object> input, Context context) {
+
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String testId = (String) req.getPathParameters().get("id");
+                    SolvedTest solvedTest = mapper.load(SolvedTest.class, testId);
+                    if (solvedTest == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+                    res.body = om.writeValueAsString(solvedTest);
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+
+    }
+
+    public Response fetchAllSolvedTests(Map<String, Object> input, Context context) {
+
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                    DynamoDBScanExpression exp = new DynamoDBScanExpression();
+                    List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
+                    for (SolvedTest t : solvedTests) {
+                        for (TestContent tc : t.getVersions()) {
+                            tc.setQuestions(null);
+                        }
+                    }
+                    res.body = om.writeValueAsString(solvedTests);
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+
+    }
+
+    public Response fetchAllSolvedTestsForUser(Map<String, Object> input, Context context) {
+
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                    DynamoDBScanExpression exp = new DynamoDBScanExpression()
+                            .withFilterExpression("solvedBy = :user")
+                            .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
+                    List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
+                    for (SolvedTest t : solvedTests) {
+                        for (TestContent tc : t.getVersions()) {
+                            tc.setQuestions(null);
+                        }
+                    }
+                    res.body = om.writeValueAsString(solvedTests);
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
 
     }
 
