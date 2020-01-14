@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Container, Row, Col } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
 import classes from "./Profile.module.css";
+import apiRequest from "../../ApiRequest";
 
-export default function Profile() {
+function Profile() {
   const state = useSelector(state => state);
   const roleName = state.data["cognito:groups"].includes("recruiters")
     ? "Rekruter"
@@ -31,7 +33,28 @@ export default function Profile() {
   }
 
   const updateProfile = () => {
-    // TBC...
+    let profileData = {
+      given_name: '',
+      family_name: '',
+      gender: '',
+      email: ''
+    }
+    profileData.given_name = givenName;
+    profileData.family_name = familyName;
+    profileData.gender = gender;
+    profileData.email = state.data.email;
+    apiRequest({
+      method: "PUT",
+      path: `updateProfile`,
+      body: profileData,
+      success: function(res) {
+        console.log(res);
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+    console.log(profileData);
   }
 
   return (
@@ -86,3 +109,5 @@ export default function Profile() {
     </Container>
   );
 }
+
+export default withRouter(Profile);
