@@ -156,4 +156,23 @@ public class UsersManagement {
                 }).handle();
     }
 
+    public Response fetchUsers(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    AWSCognitoIdentityProvider cognitoIdentityProvider = obtainCognitoIdentityProvider();
+
+                    ListUsersInGroupRequest usersRequest = new ListUsersInGroupRequest();
+
+                    usersRequest.setUserPoolId(cognitoConfig.getUserPoolId());
+                    usersRequest.setGroupName("candidates");
+
+                    List<UserType> users = cognitoIdentityProvider.listUsersInGroup(usersRequest).getUsers();
+
+                    res.body = om.writeValueAsString(users);
+                    res.statusCode = 201;
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+    }
+
 }
