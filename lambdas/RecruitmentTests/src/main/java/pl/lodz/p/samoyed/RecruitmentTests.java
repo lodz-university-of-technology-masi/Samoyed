@@ -10,10 +10,12 @@ import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import pl.lodz.p.samoyed.model.Assignment;
 import pl.lodz.p.samoyed.model.SolvedTest;
 import pl.lodz.p.samoyed.model.Test;
 import pl.lodz.p.samoyed.model.TestContent;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -90,7 +92,6 @@ public class RecruitmentTests {
         return new ResponseBuilder()
             .withRequestData(input)
             .withHandler((Request req, Response res) -> {
-//                UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 DynamoDBScanExpression exp = new DynamoDBScanExpression();
                 List<Test> tests = mapper.scan(Test.class, exp);
@@ -102,6 +103,52 @@ public class RecruitmentTests {
                 res.body = om.writeValueAsString(tests);
                 res.headers.put("Content-type", "application/json");
             }).handle();
+
+    }
+
+
+    public Response fetchAllForUser(Map<String, Object> input, Context context) {
+
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    if(req.getCognitoIdToken() == null) res.body = "User not logged";
+                    else {
+                        UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                        if (user.getGroups().contains("recruiters")) {
+                            DynamoDBScanExpression exp = new DynamoDBScanExpression()
+                                    .withFilterExpression("Author = :user")
+                                    .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
+                            List<Test> tests = mapper.scan(Test.class, exp);
+                            for (Test t : tests) {
+                                for (TestContent tc : t.getVersions()) {
+                                    tc.setQuestions(null);
+                                }
+                            }
+                            res.body = om.writeValueAsString(tests);
+                        }
+                        if(user.getGroups().contains("candidates")) {
+                            DynamoDBScanExpression exp = new DynamoDBScanExpression();
+                            List<Test> tests = mapper.scan(Test.class, exp);
+                            List<Test> testsUser = new LinkedList<>();
+                            for (Test t : tests) {
+                                for (TestContent tc : t.getVersions()) {
+                                    tc.setQuestions(null);
+                                }
+                                if (t.getAssignments() == null) continue;
+                                for (Assignment ass : t.getAssignments()) {
+                                    if (ass.getAssigneeId().equals(user.getUserId())) {
+                                        testsUser.add(t);
+                                    }
+                                }
+                            }
+                            res.body = om.writeValueAsString(testsUser);
+                        }
+                    }
+
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
 
     }
 

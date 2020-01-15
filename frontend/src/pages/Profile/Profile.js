@@ -18,7 +18,9 @@ function Profile() {
 
   useEffect(() => {
     setGender(state.data.gender);
-  }, []);
+    setFamilyName(state.data.family_name);
+    setGivenName(state.data.given_name);
+  }, [state.data.gender]);
 
   const givenNameChanged = e => {
     let newGivenName = { ...state.given_name };

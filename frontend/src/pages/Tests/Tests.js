@@ -4,7 +4,6 @@ import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
-import Test from "../../components/UI/TestPanel/Test/Test";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import TestPanel from "../../components/UI/TestPanel/TestsPanel";
 
@@ -16,22 +15,7 @@ export default function Tests() {
   const [errorData, setErrorData] = useState({ msg: "", status: "" });
 
   useEffect(() => {
-    apiRequest({
-      method: "GET",
-      path: "tests",
-      success: function(res) {
-        setTestsList(assignTestsForUser(res));
-        setLoaded(true);
-      },
-      error: function(err) {
-        console.log(err);
-        setError(true);
-        setErrorData({
-          msg: JSON.parse(err.response).error,
-          status: err.status
-        });
-      }
-    });
+    refreshTest();
   }, []);
 
   const handleClose = () => {
@@ -40,10 +24,10 @@ export default function Tests() {
 
   const assignTestsForUser = res => {
     const loadedTests = JSON.parse(res.responseText);
-    const filteredTests = _.filter(loadedTests, t => {
-      return t.author === userId;
-    });
-    return filteredTests;
+    // const filteredTests = _.filter(loadedTests, t => {
+    //   return t.author === userId;
+    // });
+    return loadedTests;
   };
 
   function deleteTest(id) {

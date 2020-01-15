@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import "./Test.css";
 import CandidatePicker from "../../CandidatePicker/CandidatePicker";
+import apiRequest from "../../../../ApiRequest";
+
 
 const Test = props => {
   const [show, setShow] = useState(false);
-
+  const [users, setUsers] = useState();
+  const [loading, setLoading] = useState(true);
   const {
     createdOn,
     id,
@@ -15,6 +18,20 @@ const Test = props => {
     exportCSV,
     userGroup,
   } = props;
+
+  useEffect(() => {
+    apiRequest({
+      method: "GET",
+      path: "fetchAllCandidates",
+      success: function(res) {
+        setUsers(JSON.parse(res.responseText));
+        setLoading(false);
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  }, []);
 
   const renderCandidatesButtons = () => {
     return (
@@ -54,7 +71,7 @@ const Test = props => {
         >
           Dodaj kandydata
         </Button>
-        <CandidatePicker title={versions[0].title} show={show} setShow={setShow} />
+        <CandidatePicker loading={loading} users={users} title={versions[0].title} show={show} setShow={setShow} />
         
       </>
     );
