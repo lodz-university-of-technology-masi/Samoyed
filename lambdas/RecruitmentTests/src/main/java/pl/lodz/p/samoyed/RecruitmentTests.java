@@ -10,10 +10,7 @@ import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pl.lodz.p.samoyed.model.Assignment;
-import pl.lodz.p.samoyed.model.SolvedTest;
-import pl.lodz.p.samoyed.model.Test;
-import pl.lodz.p.samoyed.model.TestContent;
+import pl.lodz.p.samoyed.model.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -215,8 +212,9 @@ public class RecruitmentTests {
                     DynamoDBScanExpression exp = new DynamoDBScanExpression();
                     List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
                     for (SolvedTest t : solvedTests) {
-                        for (TestContent tc : t.getVersions()) {
+                        for (SolvedTestContent tc : t.getVersions()) {
                             tc.setQuestions(null);
+                            tc.setEvaluations(null);
                         }
                     }
                     res.body = om.writeValueAsString(solvedTests);
@@ -237,8 +235,9 @@ public class RecruitmentTests {
                             .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
                     List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
                     for (SolvedTest t : solvedTests) {
-                        for (TestContent tc : t.getVersions()) {
+                        for (SolvedTestContent tc : t.getVersions()) {
                             tc.setQuestions(null);
+                            tc.setEvaluations(null);
                         }
                     }
                     res.body = om.writeValueAsString(solvedTests);
