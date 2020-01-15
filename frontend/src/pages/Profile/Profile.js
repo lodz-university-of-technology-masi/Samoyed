@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Container, Row, Col, FormControl, Form } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
@@ -15,6 +15,10 @@ function Profile() {
   const [familyName, setFamilyName] = useState("");
   const [gender, setGender] = useState("");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setGender(state.data.gender);
+  }, []);
 
   const givenNameChanged = e => {
     let newGivenName = { ...state.given_name };

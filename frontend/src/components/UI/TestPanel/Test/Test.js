@@ -23,7 +23,6 @@ const Test = props => {
     );
   };
 
-
   const renderRecruitersButtons = () => {
     return (
       <>
