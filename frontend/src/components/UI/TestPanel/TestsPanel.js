@@ -6,7 +6,7 @@ import './TestsPanel.css';
 
 
 const TestPanel = (props) => {
-    const {testsList, deleteTest, refreshTest, exportCSV, importCSV} = props;
+    const {testsList, deleteTest, refreshTest, exportCSV} = props;
     const userGroup = useSelector(state => state.data['cognito:groups'][0]);
     
 

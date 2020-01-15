@@ -249,7 +249,31 @@ const TestCreate = props => {
   
   function readCSVFile(csvContent) {
     alert("ASDASD")
+    // this.setState({});
     console.log(csvContent);
+
+    // for (let i = 0; i < csvContent.length; i++){
+    //     if (csvContent[i][1] === "O") {
+    //         this.state.currentQuestionType = "1";
+    //         this.state.currentQuestion = csvContent[i][3];
+
+    //     }
+
+    //     if (csvContent[i][1] === "W") {
+    //         this.state.currentQuestionType = "2";
+    //         this.state.currentQuestion = csvContent[i][3];
+    //         this.state.currentanswer1 = csvContent[i][5];
+    //         this.state.currentanswer2 = csvContent[i][6];
+    //         this.state.currentanswer3 = csvContent[i][7];
+    //         this.state.currentanswer4 = csvContent[i][8];
+    //     }
+
+    //     if (csvContent[i][1] === "L") {
+    //         this.state.currentQuestionType = "3";
+    //         this.state.currentQuestion = csvContent[i][3];
+    //     }
+    //     this.saveOpenQuestion();
+    // }
 
   };
 

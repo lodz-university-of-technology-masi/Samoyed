@@ -172,7 +172,6 @@ export default function Tests() {
         deleteTest={id => deleteTest(id)}
         exportCSV={id => exportCSV(id)}
         refreshTest={() => refreshTest()}
-        importCSV={() => importCSV()}
         testsList={testsList}
       />
     );
