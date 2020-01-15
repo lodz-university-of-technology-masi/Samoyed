@@ -99,25 +99,28 @@ export default function Tests() {
 			success: function(res) {
 				test = JSON.parse(res.responseText)
 
-        let ver_CSV = ""
-        let lang
-        let question ="";
-        let moreQuestions ="";
-        let answers
-        let ans_res
-        let title 
+        let ver_CSV = "", 
+            lang,
+            question ="",
+            moreQuestions ="", 
+            answers, 
+            ans_res, 
+            title
+
+        ver_CSV += test.versions.length + "\n"
 
         for(var i = 0; i < test.versions.length; i++){
+          if(i > 0) ver_CSV += '\n'
           lang = ";" + test.versions[i].lang
           if(lang == ";EN"){
             title = prompt("Please enter title for imported test:", test.versions[i].title);
           } else {
             title = prompt("Proszę wprowadzić tytuł importowanego testu:", test.versions[i].title);
           }
-          title += ";" + test.versions[i].questions.length + "\n"
+          title += ";" + test.versions[i].questions.length + lang
           for(var j = 0; j < test.versions[i].questions.length; j++){
 
-            question = j + ";" + test.versions[i].questions[j].type + lang + ";" + test.versions[i].questions[j].content
+            question = "\n" + j + ";" + test.versions[i].questions[j].type + ";" + test.versions[i].questions[j].content
             if (test.versions[i].questions[j].type === "W") {
               // Close question
               answers = test.versions[i].questions[j].answers.split("|")
@@ -129,7 +132,7 @@ export default function Tests() {
             } else {
               ans_res = ";" + test.versions[i].questions[j].answers;
             }
-            question += ans_res + "\n"
+            question += ans_res
             moreQuestions += question;
           }
           ver_CSV += title + moreQuestions;

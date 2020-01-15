@@ -41,17 +41,23 @@ const TestCreate = props => {
               props.edited.versions[i].lang
             );
             if (props.edited.versions[i].questions[j].type == "W") {
-              for (
-                var k = 0;
-                k < props.edited.versions[i].questions[j].answers.length;
-                k++
-              ) {
+              for (var k = 0; k < props.edited.versions[i].questions[j].answers.length; k++) {
+
+                let answer = props.edited.versions[i].questions[j].answers[k].split(";;");
                 changeAnswersComplexEdit(
                   j,
                   k,
-                  props.edited.versions[i].questions[j].answers[k],
+                  answer[0],
                   props.edited.versions[i].lang
                 );
+                if(answer[1] == "true"){
+                  changeAnswersComplexEdit(
+                    j,
+                    k,
+                    answer[0],
+                    props.edited.versions[i].lang
+                  );
+                }
               }
             } else {
               changeAnswersSimpleEdit(
@@ -82,7 +88,7 @@ const TestCreate = props => {
     newQuestions["EN"][n].type = value;
     if (value === "W") {
       let q = [
-        { value: "", correct: true },
+        { value: "", correct: false },
         { value: "", correct: false },
         { value: "", correct: false },
         { value: "", correct: false }
@@ -146,7 +152,7 @@ const TestCreate = props => {
 
   // Edit Methods
   function changeTitleEdit(newT, ver) {
-    let newTitle = { ...title };
+    let newTitle = title
     newTitle[ver] = newT;
     setTitle(newTitle);
   }
@@ -248,33 +254,63 @@ const TestCreate = props => {
 
   
   function readCSVFile(csvContent) {
-    alert("ASDASD")
-    // this.setState({});
     console.log(csvContent);
+    let lang_num = csvContent[0][0]
+    let lang, q_type;
+    csvContent.shift()
+    let question_num = csvContent[0][1] * 1 //Amount of questions in different languages is always the same
 
-    // for (let i = 0; i < csvContent.length; i++){
-    //     if (csvContent[i][1] === "O") {
-    //         this.state.currentQuestionType = "1";
-    //         this.state.currentQuestion = csvContent[i][3];
 
-    //     }
+    for(var i = 0; i < lang_num; i++){ 
+      lang = csvContent[i*(question_num + 1)][2]
+      setVersion(lang)
+      changeTitleEdit(
+        csvContent[i*(question_num + 1)][0],
+        lang
+      );
+      for(var j = 0; j < question_num; j++){
 
-    //     if (csvContent[i][1] === "W") {
-    //         this.state.currentQuestionType = "2";
-    //         this.state.currentQuestion = csvContent[i][3];
-    //         this.state.currentanswer1 = csvContent[i][5];
-    //         this.state.currentanswer2 = csvContent[i][6];
-    //         this.state.currentanswer3 = csvContent[i][7];
-    //         this.state.currentanswer4 = csvContent[i][8];
-    //     }
-
-    //     if (csvContent[i][1] === "L") {
-    //         this.state.currentQuestionType = "3";
-    //         this.state.currentQuestion = csvContent[i][3];
-    //     }
-    //     this.saveOpenQuestion();
-    // }
-
+        q_type = csvContent[i*(question_num + 1) + j + 1][1]
+        if(i==0){
+          appendQuestion();
+          changeType(
+            j, 
+            q_type
+          )
+        }
+        changeContentEdit(
+          j,
+          csvContent[i*(question_num + 1) + j + 1][2],
+          lang
+        );
+        if(q_type == "W"){
+          for (var k = 0; k < csvContent[i*(question_num + 1) + j + 1][3]; k++) {
+            let answer = csvContent[i*(question_num + 1) + j + 1][4+k].split("==");
+            
+            changeAnswersComplexEdit(
+              j,
+              k,
+              answer[0],
+              lang
+            );
+            if(answer[1] == "true"){
+              changeAnswersCorrectEdit(
+                j,
+                k,
+                answer[0],
+                lang
+              );
+            }
+          }
+        } else {
+          changeAnswersSimpleEdit(
+            j,
+            csvContent[i*(question_num + 1) + j + 1][3],
+            lang
+          );
+        }
+      }
+    }
   };
 
   if (uploading && !error) {
@@ -340,11 +376,8 @@ const TestCreate = props => {
         </div>
        
         <div>
-          {/*/!*<input id="myInput" type="file" ref={(ref) => this.upload = ref} style={{ display: 'none' }} />*!/*/}
-          {/*<input id="myInput" type="file" ref="uploadCSV" onClick={event => event.target.val} />*/}
-          {/*/!*<button className="csvChoose" onClick={(e) => this.upload.click()}>Import test from CSV</button>*!/*/}
           <CSVReader onFileLoaded={csvContent => readCSVFile(csvContent)}/>
-          </div>
+        </div>  
       </>
     );
   }
