@@ -51,7 +51,7 @@ const TestCreate = props => {
                   props.edited.versions[i].lang
                 );
                 if(answer[1] == "true"){
-                  changeAnswersComplexEdit(
+                  changeAnswersCorrectEdit(
                     j,
                     k,
                     answer[0],
