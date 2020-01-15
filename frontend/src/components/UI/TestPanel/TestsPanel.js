@@ -5,10 +5,11 @@ import { useSelector } from 'react-redux';
 import './TestsPanel.css';
 
 
-
 const TestPanel = (props) => {
-    const {testsList, deleteTest, refreshTest} = props;
+    const {testsList, deleteTest, refreshTest, exportCSV, importCSV} = props;
     const userGroup = useSelector(state => state.data['cognito:groups'][0]);
+    
+
     return (
         <>
         <table className="table">
@@ -29,6 +30,7 @@ const TestPanel = (props) => {
                   id={test.id}
                   versions={test.versions}
                   deleteTest={() => deleteTest(test.id)}
+                  exportCSV={() => exportCSV(test.id)}
                 />
               );
             })}
@@ -46,7 +48,7 @@ const TestPanel = (props) => {
         >
           Odśwież testy
         </button>
-        </div>
+        </div>   
       </>
     )
 }

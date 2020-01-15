@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, version} from "react";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
@@ -91,6 +91,66 @@ export default function Tests() {
     });
   }
 
+  function exportCSV(id) {
+    let test
+    apiRequest({
+			method: "GET",
+			path: "tests/id/" + id,
+			success: function(res) {
+				test = JSON.parse(res.responseText)
+
+        let ver_CSV = ""
+        let lang
+        let question ="";
+        let moreQuestions ="";
+        let answers
+        let ans_res
+        let title 
+
+        for(var i = 0; i < test.versions.length; i++){
+          lang = ";" + test.versions[i].lang
+          if(lang == ";EN"){
+            title = prompt("Please enter title for imported test:", test.versions[i].title);
+          } else {
+            title = prompt("Proszę wprowadzić tytuł importowanego testu:", test.versions[i].title);
+          }
+          title += ";" + test.versions[i].questions.length + "\n"
+          for(var j = 0; j < test.versions[i].questions.length; j++){
+
+            question = j + ";" + test.versions[i].questions[j].type + lang + ";" + test.versions[i].questions[j].content
+            if (test.versions[i].questions[j].type === "W") {
+              // Close question
+              answers = test.versions[i].questions[j].answers.split("|")
+              ans_res = ";" + answers.length
+              for(var z = 0; z < answers.length; z++){
+                answers[z] = answers[z].split(';').join('=')
+                ans_res += ";" + answers[z]
+              }
+            } else {
+              ans_res = ";" + test.versions[i].questions[j].answers;
+            }
+            question += ans_res + "\n"
+            moreQuestions += question;
+          }
+          ver_CSV += title + moreQuestions;
+          title = ""
+          moreQuestions = ""
+        }
+
+        const element = document.createElement("a");
+        const file = new Blob([ver_CSV], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = "csv_export.csv";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();      
+			},	
+			error: function(err) {
+				console.log(err)
+				// ??
+			}
+		})
+  }
+
   if (!loaded && !error) {
     return (
       <Loader>
@@ -110,7 +170,9 @@ export default function Tests() {
     return (
       <TestPanel
         deleteTest={id => deleteTest(id)}
+        exportCSV={id => exportCSV(id)}
         refreshTest={() => refreshTest()}
+        importCSV={() => importCSV()}
         testsList={testsList}
       />
     );

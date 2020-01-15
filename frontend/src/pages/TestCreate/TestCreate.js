@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Component } from "react";
+import CSVReader from 'react-csv-reader'
 import Loader from "../../components/UI/Loader/Loader";
 import { func } from "prop-types";
 import { useHistory, useParams } from "react-router";
@@ -245,6 +246,13 @@ const TestCreate = props => {
     setUploading(false);
   };
 
+  
+  function readCSVFile(csvContent) {
+    alert("ASDASD")
+    console.log(csvContent);
+
+  };
+
   if (uploading && !error) {
     return (
       <Loader>
@@ -306,6 +314,13 @@ const TestCreate = props => {
             Zapisz
           </button>
         </div>
+       
+        <div>
+          {/*/!*<input id="myInput" type="file" ref={(ref) => this.upload = ref} style={{ display: 'none' }} />*!/*/}
+          {/*<input id="myInput" type="file" ref="uploadCSV" onClick={event => event.target.val} />*/}
+          {/*/!*<button className="csvChoose" onClick={(e) => this.upload.click()}>Import test from CSV</button>*!/*/}
+          <CSVReader onFileLoaded={csvContent => readCSVFile(csvContent)}/>
+          </div>
       </>
     );
   }

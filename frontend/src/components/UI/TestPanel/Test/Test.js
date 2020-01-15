@@ -12,6 +12,7 @@ const Test = props => {
     id,
     versions,
     deleteTest,
+    exportCSV,
     userGroup,
   } = props;
 
@@ -39,6 +40,14 @@ const Test = props => {
           Usuń
         </Button>
         <Button
+          className="btn btn-primary ml-1"
+          onClick={() => {
+            exportCSV(id);
+          }}
+        >
+          Pobierz CSV
+        </Button>
+        <Button
           className="btn btn-success ml-1"
           onClick={() => {
             setShow(true);
@@ -47,6 +56,7 @@ const Test = props => {
           Dodaj kandydata
         </Button>
         <CandidatePicker title={versions[0].title} show={show} setShow={setShow} />
+        
       </>
     );
   };
