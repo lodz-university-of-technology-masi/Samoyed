@@ -18,7 +18,7 @@ function Profile() {
 
   useEffect(() => {
     setGender(state.data.gender);
-  }, []);
+  }, [state.data.gender]);
 
   const givenNameChanged = e => {
     let newGivenName = { ...state.given_name };

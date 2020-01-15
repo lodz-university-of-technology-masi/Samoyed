@@ -16,22 +16,7 @@ export default function Tests() {
   const [errorData, setErrorData] = useState({ msg: "", status: "" });
 
   useEffect(() => {
-    apiRequest({
-      method: "GET",
-      path: "tests",
-      success: function(res) {
-        setTestsList(assignTestsForUser(res));
-        setLoaded(true);
-      },
-      error: function(err) {
-        console.log(err);
-        setError(true);
-        setErrorData({
-          msg: JSON.parse(err.response).error,
-          status: err.status
-        });
-      }
-    });
+    refreshTest();
   }, []);
 
   const handleClose = () => {

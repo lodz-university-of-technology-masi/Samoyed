@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Col, Row } from "react-bootstrap";
 import './CandidatePicker.css';
+import apiRequest from "../../../ApiRequest";
+
 
 const CandidatePicker = props => {
   const { show, setShow, title } = props;
   const [ picked, setPicked ] = useState(false);
+  const [ users, setUsers ] =  useState();
+  const [loading, setLoading] = useState(false);
 
-  const users = [
-    { id: "1", name: "Michał", surname: "Kidawa" },
-    { id: "2", name: "Ola", surname: "Wnuk" },
-    { id: "3", name: "Krzysztof", surname: "Stępień" }
-  ];
+  useEffect(() => {
+    apiRequest({
+      method: "GET",
+      path: "fetchAllCandidates",
+      success: function(res) {
+        setUsers(JSON.parse(res.responseText))
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    });
+  }, []);
 
   const chooseUser = () => {
       setPicked(true);
@@ -22,15 +33,18 @@ const CandidatePicker = props => {
   };
 
   const renderUsers = () => {
-    return users.map(user => {
-      return (
-        <Row onClick={() => chooseUser()} className="candidate__row">
-          <Col lg={4}>{user.id}</Col>
-          <Col lg={4}>{user.name}</Col>
-          <Col lg={4}>{user.surname}</Col>
-        </Row>
-      );
-    });
+    if(users !== undefined){
+      return users.map(user => {
+      let attributes = user.attributes;  
+      let email = (attributes.find(a => {
+        return a.name === "email";
+      }))
+      let id = (attributes.find(a => {
+        return a.name === "sub";
+      }))
+      return <p>{email.value}{id.value}</p>
+      })
+    }
   };
 
   return (
