@@ -279,4 +279,38 @@ public class RecruitmentTests {
 
     }
 
+    public Response evaluateTest(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String solvedTestId = (String) req.getPathParameters().get("id");
+                    SolvedTest solvedTest = mapper.load(SolvedTest.class, solvedTestId);
+                    if (solvedTest == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+
+                    String id = solvedTest.getId();
+                    String solvedBy = solvedTest.getSolvedBy();
+                    Long solvedOn = solvedTest.getSolvedOn();
+                    String testId = solvedTest.getTestId();
+                    List<SolvedTestContent> versions = solvedTest.getVersions();
+
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("recruiters")) {
+                        solvedTest = om.readValue(req.getBody(), SolvedTest.class);
+                        solvedTest.setSolvedBy(solvedBy);
+                        solvedTest.setSolvedOn(solvedOn);
+                        solvedTest.setId(id);
+                        solvedTest.setTestId(testId);
+                        solvedTest.setVersions(versions);
+                        mapper.save(solvedTest);
+                        res.body = om.writeValueAsString(solvedTest);
+                        res.statusCode = 204;
+                    } else {
+                        throw new ApiException("You must be recruiter to perform this action.");
+                    }
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+    }
+
 }
