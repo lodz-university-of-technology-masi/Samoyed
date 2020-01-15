@@ -4,7 +4,6 @@ import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
 import { useSelector } from "react-redux";
-import Test from "../../components/UI/TestPanel/Test/Test";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import TestPanel from "../../components/UI/TestPanel/TestsPanel";
 
