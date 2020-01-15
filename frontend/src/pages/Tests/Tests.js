@@ -40,10 +40,10 @@ export default function Tests() {
 
   const assignTestsForUser = res => {
     const loadedTests = JSON.parse(res.responseText);
-    const filteredTests = _.filter(loadedTests, t => {
-      return t.author === userId;
-    });
-    return filteredTests;
+    // const filteredTests = _.filter(loadedTests, t => {
+    //   return t.author === userId;
+    // });
+    return loadedTests;
   };
 
   function deleteTest(id) {

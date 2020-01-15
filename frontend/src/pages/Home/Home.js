@@ -8,11 +8,11 @@ import { useSelector } from "react-redux";
 export default function Home() {
   const [testsList, setTestsList] = useState([]);
   const isLogged = useSelector(state => state.isLogged);
-
-  useEffect(() => {
+  const path = isLogged ? "tests" : "tests/all";
+  useEffect(() => { 
     apiRequest({
       method: "GET",
-      path: "tests",
+      path,
       success: function(res) {
         setTestsList(JSON.parse(res.responseText));
       },
@@ -28,9 +28,9 @@ export default function Home() {
     <div className="Home">
       <div className="lander">
         <h1>Witaj w naszej aplikacji!</h1>
-        <h2>Liczba dostępnych testów:</h2>
+        <h2>Liczba {isLogged ? "dostępnych dla Ciebie" : "wszystkich dostępnych" } testów:</h2>
         <p>
-          {nrOfTests} {nrOfTests >= 5 ? "testów" : "testy"}
+          {nrOfTests} 
         </p>
         <div>
           <Link to="/login">
