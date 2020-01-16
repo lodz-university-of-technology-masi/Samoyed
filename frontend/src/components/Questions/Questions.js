@@ -33,7 +33,7 @@ const Questions = props => {
             Usuń
           </button>
         </div>
-        <AnswersBlock 
+        <AnswersBlock
             q={q}
             i={i}
             changeAnswersCorrectCreation={props.changeAnswersCorrectCreation}

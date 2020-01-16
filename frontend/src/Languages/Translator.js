@@ -11,9 +11,6 @@ export default function translate (text, lang) {
     const response = `https://translate.yandex.net/api/v1.5/tr.json/translate?key=${translatorKey}&text=${text}&lang=${lang}&[format=${format}]`;
     let json = httpGet(response);
     let input = JSON.parse(json);
-
-    console.log(input.text);
-
     return input.text[0];
 
 }

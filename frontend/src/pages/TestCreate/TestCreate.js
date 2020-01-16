@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import CSVReader from 'react-csv-reader'
+import CSVReader from "react-csv-reader";
 import Loader from "../../components/UI/Loader/Loader";
 import { useHistory, useParams } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import Questions from "../../components/Questions/Questions";
+import translate from "../../Languages/Translator";
+import { Button } from "react-bootstrap";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -39,16 +41,21 @@ const TestCreate = props => {
               props.edited.versions[i].lang
             );
             if (props.edited.versions[i].questions[j].type === "W") {
-              for (var k = 0; k < props.edited.versions[i].questions[j].answers.length; k++) {
-
-                let answer = props.edited.versions[i].questions[j].answers[k].split(";;");
+              for (
+                var k = 0;
+                k < props.edited.versions[i].questions[j].answers.length;
+                k++
+              ) {
+                let answer = props.edited.versions[i].questions[j].answers[
+                  k
+                ].split(";;");
                 changeAnswersComplexEdit(
                   j,
                   k,
                   answer[0],
                   props.edited.versions[i].lang
                 );
-                if(answer[1] === "true"){
+                if (answer[1] === "true") {
                   changeAnswersCorrectEdit(
                     j,
                     k,
@@ -150,7 +157,7 @@ const TestCreate = props => {
 
   // Edit Methods
   function changeTitleEdit(newT, ver) {
-    let newTitle = title
+    let newTitle = title;
     newTitle[ver] = newT;
     setTitle(newTitle);
   }
@@ -231,7 +238,7 @@ const TestCreate = props => {
         body: test,
         success: function(res) {
           // Redirect to /tests
-          history.push('/tests')
+          history.push("/tests");
         },
         error: function(err) {
           console.log(err);
@@ -250,66 +257,83 @@ const TestCreate = props => {
     setUploading(false);
   };
 
-  
+  const translateTestToEng = () => {
+    const newTitle = {
+      ...title,
+      EN: translate(title["PL"], "en")
+    };
+    setTitle(newTitle);
+    let translatedQuestions = { ...questions };
+    for (let q in translatedQuestions["PL"]) {
+      let translatedAnswers = [];
+      if (translatedQuestions["PL"][q].type === "W") {
+        translatedQuestions["PL"][q].answers.forEach((a, i) => {
+          const value = translate(translatedQuestions["PL"][q].answers[i].value, "en")
+          return translatedAnswers.push({
+            ...a,
+            value
+          });
+        });
+      } else {
+        translatedAnswers = translate(translatedQuestions["PL"][q].answers, "en");
+      }
+      let t = {
+        ...translatedQuestions["PL"][q],
+        content: translate(translatedQuestions["PL"][q].content, "en"),
+        answers: translatedAnswers
+      };
+      translatedQuestions["EN"][q] = t;
+    }
+    setQuestions(translatedQuestions);
+  };
+
   function readCSVFile(csvContent) {
     console.log(csvContent);
-    let lang_num = csvContent[0][0]
+    let lang_num = csvContent[0][0];
     let lang, q_type;
-    csvContent.shift()
-    let question_num = csvContent[0][1] * 1 //Amount of questions in different languages is always the same
+    csvContent.shift();
+    let question_num = csvContent[0][1] * 1; //Amount of questions in different languages is always the same
 
-
-    for(var i = 0; i < lang_num; i++){ 
-      lang = csvContent[i*(question_num + 1)][2]
-      setVersion(lang)
-      changeTitleEdit(
-        csvContent[i*(question_num + 1)][0],
-        lang
-      );
-      for(var j = 0; j < question_num; j++){
-
-        q_type = csvContent[i*(question_num + 1) + j + 1][1]
-        if(i===0){
+    for (var i = 0; i < lang_num; i++) {
+      lang = csvContent[i * (question_num + 1)][2];
+      setVersion(lang);
+      changeTitleEdit(csvContent[i * (question_num + 1)][0], lang);
+      for (var j = 0; j < question_num; j++) {
+        q_type = csvContent[i * (question_num + 1) + j + 1][1];
+        if (i === 0) {
           appendQuestion();
-          changeType(
-            j, 
-            q_type
-          )
+          changeType(j, q_type);
         }
         changeContentEdit(
           j,
-          csvContent[i*(question_num + 1) + j + 1][2],
+          csvContent[i * (question_num + 1) + j + 1][2],
           lang
         );
-        if(q_type === "W"){
-          for (var k = 0; k < csvContent[i*(question_num + 1) + j + 1][3]; k++) {
-            let answer = csvContent[i*(question_num + 1) + j + 1][4+k].split("==");
-            
-            changeAnswersComplexEdit(
-              j,
-              k,
-              answer[0],
-              lang
-            );
-            if(answer[1] === "true"){
-              changeAnswersCorrectEdit(
-                j,
-                k,
-                answer[0],
-                lang
-              );
+        if (q_type === "W") {
+          for (
+            var k = 0;
+            k < csvContent[i * (question_num + 1) + j + 1][3];
+            k++
+          ) {
+            let answer = csvContent[i * (question_num + 1) + j + 1][
+              4 + k
+            ].split("==");
+
+            changeAnswersComplexEdit(j, k, answer[0], lang);
+            if (answer[1] === "true") {
+              changeAnswersCorrectEdit(j, k, answer[0], lang);
             }
           }
         } else {
           changeAnswersSimpleEdit(
             j,
-            csvContent[i*(question_num + 1) + j + 1][3],
+            csvContent[i * (question_num + 1) + j + 1][3],
             lang
           );
         }
       }
     }
-  };
+  }
 
   if (uploading && !error) {
     return (
@@ -339,6 +363,9 @@ const TestCreate = props => {
             <option value="EN">EN</option>
           </select>
           <label className="form-check-label ml-2">Wersja językowa</label>
+          <Button onClick={translateTestToEng} className="ml-auto">
+            Przetłumacz na ENG
+          </Button>
         </div>
         <div className="form-group row">
           <input
@@ -352,8 +379,8 @@ const TestCreate = props => {
             zignorowana.
           </small>
         </div>
-        <Questions 
-          questions={questions[version]} 
+        <Questions
+          questions={questions[version]}
           changeAnswersCorrectCreation={changeAnswersCorrectCreation}
           changeAnswersComplexCreation={changeAnswersComplexCreation}
           changeAnswersSimpleCreation={changeAnswersSimpleCreation}
@@ -372,10 +399,10 @@ const TestCreate = props => {
             Zapisz
           </button>
         </div>
-       
+
         <div>
-          <CSVReader onFileLoaded={csvContent => readCSVFile(csvContent)}/>
-        </div>  
+          <CSVReader onFileLoaded={csvContent => readCSVFile(csvContent)} />
+        </div>
       </>
     );
   }
