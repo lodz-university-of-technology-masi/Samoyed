@@ -203,12 +203,24 @@ public class RecruitmentTests {
                 .withRequestData(input)
                 .withHandler((Request req, Response res) -> {
                     res.headers.put("Content-type", "application/json");
+                    String testId = (String) req.getPathParameters().get("id");
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                     if (user.getGroups().contains("candidates")) {
-                        SolvedTest solvedTest = om.readValue(req.getBody(), SolvedTest.class);
+                        SolvedTestContent solvedTestContent = om.readValue(req.getBody(), SolvedTestContent.class);
+                        solvedTestContent.setEvaluations(null);
+                        solvedTestContent.setTitle(null);
+
+                        List<SolvedTestContent> versions = new LinkedList<>();
+                        versions.add(solvedTestContent);
+
+                        SolvedTest solvedTest = new SolvedTest();
+                        solvedTest.setTestId(testId);
+                        solvedTest.setVersions(versions);
                         solvedTest.setSolvedBy(user.getUserId());
                         solvedTest.setSolvedOn(System.currentTimeMillis());
+                        solvedTest.setEvaluated(false);
                         mapper.save(solvedTest);
+
                         res.body = om.writeValueAsString(solvedTest);
                         res.statusCode = 201;
                     } else {
@@ -334,6 +346,7 @@ public class RecruitmentTests {
                         solvedTest.setId(id);
                         solvedTest.setTestId(testId);
                         solvedTest.setVersions(versions);
+                        solvedTest.setEvaluated(true);
                         mapper.save(solvedTest);
                         res.body = om.writeValueAsString(solvedTest);
                         res.statusCode = 204;
