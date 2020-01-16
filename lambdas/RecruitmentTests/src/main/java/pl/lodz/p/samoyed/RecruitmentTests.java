@@ -10,10 +10,7 @@ import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import pl.lodz.p.samoyed.model.Assignment;
-import pl.lodz.p.samoyed.model.SolvedTest;
-import pl.lodz.p.samoyed.model.Test;
-import pl.lodz.p.samoyed.model.TestContent;
+import pl.lodz.p.samoyed.model.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +43,7 @@ public class RecruitmentTests {
 
     }
 
-    public Response update(Map<String, Object> input, Context context) {
+    public Response updateTest(Map<String, Object> input, Context context) {
         return new ResponseBuilder()
                 .withRequestData(input)
                 .withHandler((Request req, Response res) -> {
@@ -55,12 +52,43 @@ public class RecruitmentTests {
                     if (test == null) {
                         throw new ApiException("Test does not exist.", 404);
                     }
+                    List<Assignment> assignments;
+                    if (test.getAssignments() == null) assignments = new LinkedList<>();
+                    else assignments = test.getAssignments();
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                     if (user.getGroups().contains("recruiters")) {
                         test = om.readValue(req.getBody(), Test.class);
                         test.setAuthor(user.getUserId());
                         test.setCreatedOn(System.currentTimeMillis());
                         test.setId(testId);
+                        test.setAssignments(assignments);
+                        mapper.save(test);
+                        res.body = om.writeValueAsString(test);
+                        res.statusCode = 204;
+                    } else {
+                        throw new ApiException("You must be recruiter to perform this action.");
+                    }
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+    }
+
+    public Response assignUserToTest(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String testId = (String) req.getPathParameters().get("id");
+                    Test test = mapper.load(Test.class, testId);
+                    if (test == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+                    List<Assignment> assignments;
+                    if (test.getAssignments() == null) assignments = new LinkedList<>();
+                    else assignments = test.getAssignments();
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("recruiters")) {
+                        Assignment assignment = om.readValue(req.getBody(), Assignment.class);
+                        assignments.add(assignment);
+                        test.setAssignments(assignments);
                         mapper.save(test);
                         res.body = om.writeValueAsString(test);
                         res.statusCode = 204;
@@ -215,8 +243,9 @@ public class RecruitmentTests {
                     DynamoDBScanExpression exp = new DynamoDBScanExpression();
                     List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
                     for (SolvedTest t : solvedTests) {
-                        for (TestContent tc : t.getVersions()) {
+                        for (SolvedTestContent tc : t.getVersions()) {
                             tc.setQuestions(null);
+                            tc.setEvaluations(null);
                         }
                     }
                     res.body = om.writeValueAsString(solvedTests);
@@ -237,8 +266,9 @@ public class RecruitmentTests {
                             .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
                     List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
                     for (SolvedTest t : solvedTests) {
-                        for (TestContent tc : t.getVersions()) {
+                        for (SolvedTestContent tc : t.getVersions()) {
                             tc.setQuestions(null);
+                            tc.setEvaluations(null);
                         }
                     }
                     res.body = om.writeValueAsString(solvedTests);
@@ -278,6 +308,40 @@ public class RecruitmentTests {
                     res.headers.put("Content-type", "application/json");
                 }).handle();
 
+    }
+
+    public Response evaluateTest(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String solvedTestId = (String) req.getPathParameters().get("id");
+                    SolvedTest solvedTest = mapper.load(SolvedTest.class, solvedTestId);
+                    if (solvedTest == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+
+                    String id = solvedTest.getId();
+                    String solvedBy = solvedTest.getSolvedBy();
+                    Long solvedOn = solvedTest.getSolvedOn();
+                    String testId = solvedTest.getTestId();
+                    List<SolvedTestContent> versions = solvedTest.getVersions();
+
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("recruiters")) {
+                        solvedTest = om.readValue(req.getBody(), SolvedTest.class);
+                        solvedTest.setSolvedBy(solvedBy);
+                        solvedTest.setSolvedOn(solvedOn);
+                        solvedTest.setId(id);
+                        solvedTest.setTestId(testId);
+                        solvedTest.setVersions(versions);
+                        mapper.save(solvedTest);
+                        res.body = om.writeValueAsString(solvedTest);
+                        res.statusCode = 204;
+                    } else {
+                        throw new ApiException("You must be recruiter to perform this action.");
+                    }
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
     }
 
 }

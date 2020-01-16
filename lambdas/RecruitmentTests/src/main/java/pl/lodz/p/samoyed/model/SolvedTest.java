@@ -13,7 +13,7 @@ public class SolvedTest {
     private String id;
     private String solvedBy;
     private Long solvedOn;
-    private List<TestContent> versions;
+    private List<SolvedTestContent> versions;
     private String testId;
 
     @DynamoDBHashKey(attributeName="id")
@@ -42,10 +42,10 @@ public class SolvedTest {
     }
 
     @DynamoDBAttribute(attributeName="versions")
-    public List<TestContent> getVersions() {
+    public List<SolvedTestContent> getVersions() {
         return versions;
     }
-    public void setVersions(List<TestContent> versions) {
+    public void setVersions(List<SolvedTestContent> versions) {
         this.versions = versions;
     }
 
