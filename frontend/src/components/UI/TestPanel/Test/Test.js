@@ -5,19 +5,11 @@ import "./Test.css";
 import CandidatePicker from "../../CandidatePicker/CandidatePicker";
 import apiRequest from "../../../../ApiRequest";
 
-
 const Test = props => {
   const [show, setShow] = useState(false);
   const [users, setUsers] = useState();
   const [loading, setLoading] = useState(true);
-  const {
-    createdOn,
-    id,
-    versions,
-    deleteTest,
-    exportCSV,
-    userGroup,
-  } = props;
+  const { createdOn, id, versions, deleteTest, exportCSV, userGroup, assignCandidateToTest} = props;
 
   useEffect(() => {
     apiRequest({
@@ -35,7 +27,7 @@ const Test = props => {
 
   const renderCandidatesButtons = () => {
     return (
-      <Link to={"/test" + id}>
+      <Link to={"/test/" + id}>
         <button className="btn btn-primary mr-1">Rozwiąż</button>
       </Link>
     );
@@ -71,8 +63,17 @@ const Test = props => {
         >
           Dodaj kandydata
         </Button>
-        <CandidatePicker loading={loading} users={users} title={versions[0].title} show={show} setShow={setShow} />
-        
+        <CandidatePicker
+          assignCandidateToTest={(candidateId, testId) =>
+            assignCandidateToTest(candidateId, testId)
+          }
+          loading={loading}
+          users={users}
+          title={versions[0].title}
+          show={show}
+          setShow={setShow}
+          testId={id}
+        />
       </>
     );
   };
