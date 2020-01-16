@@ -197,6 +197,23 @@ public class RecruitmentTests {
 
     }
 
+    private List<Question> prepareQuestions(Answers answers, List<TestContent> tc) {
+        List<String> fromInput = answers.getAnswers();
+
+        List<Question> questions = new LinkedList<>();
+        List<Question> questionsFromTC = tc.get(0).getQuestions();
+
+        for(int i = 0; i < fromInput.size(); i++) {
+            Question q = new Question();
+            q.setAnswers(fromInput.get(i));
+            q.setContent(questionsFromTC.get(i).getContent());
+            q.setType(questionsFromTC.get(i).getType());
+            questions.add(q);
+        }
+
+        return questions;
+    }
+
     public Response addSolvedTest(Map<String, Object> input, Context context) {
 
         return new ResponseBuilder()
@@ -205,8 +222,13 @@ public class RecruitmentTests {
                     res.headers.put("Content-type", "application/json");
                     String testId = (String) req.getPathParameters().get("id");
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+
                     if (user.getGroups().contains("candidates")) {
-                        SolvedTestContent solvedTestContent = om.readValue(req.getBody(), SolvedTestContent.class);
+                        Test t = mapper.load(Test.class, testId);
+                        List<Question> questions = prepareQuestions(om.readValue(req.getBody(), Answers.class), t.getVersions());
+
+                        SolvedTestContent solvedTestContent = new SolvedTestContent();
+                        solvedTestContent.setQuestions(questions);
                         solvedTestContent.setEvaluations(null);
                         solvedTestContent.setTitle(null);
 
