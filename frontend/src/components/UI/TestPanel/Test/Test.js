@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Button, DropdownButton, Dropdown, Col, Row } from "react-bootstrap";
 import "./Test.css";
 import CandidatePicker from "../../CandidatePicker/CandidatePicker";
 import apiRequest from "../../../../ApiRequest";
@@ -9,7 +9,15 @@ const Test = props => {
   const [show, setShow] = useState(false);
   const [users, setUsers] = useState();
   const [loading, setLoading] = useState(true);
-  const { createdOn, id, versions, deleteTest, exportCSV, userGroup, assignCandidateToTest} = props;
+  const {
+    createdOn,
+    id,
+    versions,
+    deleteTest,
+    exportCSV,
+    userGroup,
+    assignCandidateToTest
+  } = props;
 
   useEffect(() => {
     apiRequest({
@@ -35,34 +43,32 @@ const Test = props => {
 
   const renderRecruitersButtons = () => {
     return (
-      <>
-        <Link to={"/test/edit/" + id}>
-          <button className="btn btn-primary mr-1">Edytuj</button>
-        </Link>
-        <Button
-          className="btn btn-danger"
-          onClick={() => {
-            deleteTest(id);
-          }}
-        >
-          Usuń
-        </Button>
-        <Button
-          className="btn btn-primary ml-1"
-          onClick={() => {
-            exportCSV(id);
-          }}
-        >
-          Pobierz CSV
-        </Button>
-        <Button
-          className="btn btn-success ml-1"
-          onClick={() => {
-            setShow(true);
-          }}
-        >
-          Dodaj kandydata
-        </Button>
+      <Row>
+        <Col style={{ padding: "0" }}>
+          <Button
+            onClick={() => {
+              setShow(true);
+            }}
+            variant="outline-primary"
+          >
+            Dodaj kandydata
+          </Button>
+        </Col>
+        <Col style={{ padding: "0" }}>
+          <DropdownButton variant="outline-secondary" title={`Opcje`}>
+            <Dropdown.Item>Pobierz CSV</Dropdown.Item>
+            <Dropdown.Item tag={Link} to={"/test/edit/" + id}>
+              Edytuj
+            </Dropdown.Item>
+            <Dropdown.Item
+              onClick={() => {
+                deleteTest(id);
+              }}
+            >
+              Usuń
+            </Dropdown.Item>
+          </DropdownButton>
+        </Col>
         <CandidatePicker
           assignCandidateToTest={(candidateId, testId) =>
             assignCandidateToTest(candidateId, testId)
@@ -74,7 +80,7 @@ const Test = props => {
           setShow={setShow}
           testId={id}
         />
-      </>
+      </Row>
     );
   };
 
@@ -86,7 +92,7 @@ const Test = props => {
         })}
       </td>
       <td align="center">{new Date(createdOn).toLocaleDateString()}</td>
-      <td align="center">
+      <td width="26%" align="center">
         <div className="table__content">
           {userGroup === "recruiters"
             ? renderRecruitersButtons()
