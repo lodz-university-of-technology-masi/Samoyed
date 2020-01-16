@@ -207,7 +207,7 @@ public class RecruitmentTests {
         String langOriginal = tc.get(0).getLang();
         int whichVersion;
 
-        if (tc.get(1) == null)
+        if (tc.size() == 1)
            whichVersion = 0;
         else if (langOriginal.equals(lang)) whichVersion = 0;
         else whichVersion = 1;
