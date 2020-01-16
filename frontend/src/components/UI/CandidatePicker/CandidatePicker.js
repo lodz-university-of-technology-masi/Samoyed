@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Row } from "react-bootstrap";
 
 import Loader from "../Loader/Loader";
@@ -44,7 +44,7 @@ const CandidatePicker = props => {
           return a.name === "sub";
         });
         return (
-          <Row>
+          <Row key={id.value}>
             <Canditate
               chooseUser={id => chooseUser(id)}
               id={id.value}

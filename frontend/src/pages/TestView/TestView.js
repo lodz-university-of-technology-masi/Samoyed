@@ -119,7 +119,7 @@ export default function TestView(props) {
         <div className="form-inline">
           <select className="form-control" onChange={changeVersion}>
             {versions.map((v, i) => {
-              return <option value={i}>{v.lang}</option>;
+              return <option key={i} value={i}>{v.lang}</option>;
             })}
           </select>
           <h1 className="ml-3">{versions[viewVersion].title}</h1>

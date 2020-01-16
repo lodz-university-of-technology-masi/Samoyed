@@ -8,7 +8,7 @@ const NotFound = () => {
   const isLogged = useSelector(state => state.isLogged);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setRedirect(true), 3000);
+    setTimeout(() => setRedirect(true), 3000);
   }, []);
 
   return (

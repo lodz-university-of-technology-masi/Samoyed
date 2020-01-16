@@ -9,6 +9,7 @@ export default function Home() {
   const [testsList, setTestsList] = useState([]);
   const isLogged = useSelector(state => state.isLogged);
   const path = isLogged ? "tests" : "tests/all";
+  
   useEffect(() => { 
     apiRequest({
       method: "GET",
@@ -20,7 +21,7 @@ export default function Home() {
         console.log(err);
       }
     });
-  }, []);
+  }, [path]);
 
   const nrOfTests = Object.keys(testsList).length;
 

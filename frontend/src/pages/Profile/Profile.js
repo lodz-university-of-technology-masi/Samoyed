@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, Row, Col, FormControl, Form } from "react-bootstrap";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 import classes from "./Profile.module.css";
 import apiRequest from "../../ApiRequest";
@@ -55,8 +55,7 @@ function Profile() {
       method: "PUT",
       path: `updateProfile`,
       body: profileData,
-      success: function(res) {
-      },
+      success: function(res) {},
       error: function(err) {
         console.log(err);
       }

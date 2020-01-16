@@ -1,22 +1,39 @@
-import React, { useState, useEffect, version } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import _ from "underscore";
-import { useSelector } from "react-redux";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import TestPanel from "../../components/UI/TestPanel/TestsPanel";
 
 export default function Tests() {
   const [loaded, setLoaded] = useState(false);
   const [testsList, setTestsList] = useState([]);
-  const userId = useSelector(state => state.data.sub);
   const [error, setError] = useState(false);
   const [errorData, setErrorData] = useState({ msg: "", status: "" });
 
+  const refreshTest = useCallback(() => {
+    apiRequest({
+      method: "GET",
+      path: "tests",
+      success: function(res) {
+        setTestsList(assignTestsForUser(res));
+        setLoaded(true);
+      },
+      error: function(err) {
+        console.log(err);
+        setError(true);
+        setErrorData({
+          msg: JSON.parse(err.response).error,
+          status: err.status
+        });
+      }
+    });
+  },[])
+
   useEffect(() => {
     refreshTest();
-  }, []);
+  }, [refreshTest]);
 
   const handleClose = () => {
     setError(false);
@@ -24,9 +41,6 @@ export default function Tests() {
 
   const assignTestsForUser = res => {
     const loadedTests = JSON.parse(res.responseText);
-    // const filteredTests = _.filter(loadedTests, t => {
-    //   return t.author === userId;
-    // });
     return loadedTests;
   };
 
@@ -81,25 +95,6 @@ export default function Tests() {
     }
   }
 
-  function refreshTest() {
-    apiRequest({
-      method: "GET",
-      path: "tests",
-      success: function(res) {
-        setTestsList(assignTestsForUser(res));
-        setLoaded(true);
-      },
-      error: function(err) {
-        console.log(err);
-        setError(true);
-        setErrorData({
-          msg: JSON.parse(err.response).error,
-          status: err.status
-        });
-      }
-    });
-  }
-
   function exportCSV(id) {
     let test;
     apiRequest({
@@ -121,7 +116,7 @@ export default function Tests() {
         for (var i = 0; i < test.versions.length; i++) {
           if (i > 0) ver_CSV += "\n";
           lang = ";" + test.versions[i].lang;
-          if (lang == ";EN") {
+          if (lang === ";EN") {
             title = prompt(
               "Please enter title for imported test:",
               test.versions[i].title

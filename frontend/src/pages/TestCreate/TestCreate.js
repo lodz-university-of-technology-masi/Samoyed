@@ -1,13 +1,11 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect } from "react";
 import CSVReader from 'react-csv-reader'
 import Loader from "../../components/UI/Loader/Loader";
-import { func } from "prop-types";
 import { useHistory, useParams } from "react-router";
 import apiRequest from "../../ApiRequest";
 import { withRouter } from "react-router-dom";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import Questions from "../../components/Questions/Questions";
-import translate from "../../Languages/Translator";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -22,7 +20,7 @@ const TestCreate = props => {
 
   useEffect(() => {
     if (!loaded) {
-      if (props.edited != undefined) {
+      if (props.edited !== undefined) {
         for (var i = 0; i < props.edited.versions.length; i++) {
           setVersion(props.edited.versions[i].lang);
           changeTitleEdit(
@@ -31,7 +29,7 @@ const TestCreate = props => {
           );
 
           for (var j = 0; j < props.edited.versions[i].questions.length; j++) {
-            if (i == 0) {
+            if (i === 0) {
               appendQuestion();
               changeType(j, props.edited.versions[i].questions[j].type);
             }
@@ -40,7 +38,7 @@ const TestCreate = props => {
               props.edited.versions[i].questions[j].content,
               props.edited.versions[i].lang
             );
-            if (props.edited.versions[i].questions[j].type == "W") {
+            if (props.edited.versions[i].questions[j].type === "W") {
               for (var k = 0; k < props.edited.versions[i].questions[j].answers.length; k++) {
 
                 let answer = props.edited.versions[i].questions[j].answers[k].split(";;");
@@ -50,7 +48,7 @@ const TestCreate = props => {
                   answer[0],
                   props.edited.versions[i].lang
                 );
-                if(answer[1] == "true"){
+                if(answer[1] === "true"){
                   changeAnswersCorrectEdit(
                     j,
                     k,
@@ -271,7 +269,7 @@ const TestCreate = props => {
       for(var j = 0; j < question_num; j++){
 
         q_type = csvContent[i*(question_num + 1) + j + 1][1]
-        if(i==0){
+        if(i===0){
           appendQuestion();
           changeType(
             j, 
@@ -283,7 +281,7 @@ const TestCreate = props => {
           csvContent[i*(question_num + 1) + j + 1][2],
           lang
         );
-        if(q_type == "W"){
+        if(q_type === "W"){
           for (var k = 0; k < csvContent[i*(question_num + 1) + j + 1][3]; k++) {
             let answer = csvContent[i*(question_num + 1) + j + 1][4+k].split("==");
             
@@ -293,7 +291,7 @@ const TestCreate = props => {
               answer[0],
               lang
             );
-            if(answer[1] == "true"){
+            if(answer[1] === "true"){
               changeAnswersCorrectEdit(
                 j,
                 k,
