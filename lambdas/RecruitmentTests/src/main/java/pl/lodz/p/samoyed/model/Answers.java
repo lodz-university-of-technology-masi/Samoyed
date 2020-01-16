@@ -8,8 +8,7 @@ import java.util.List;
 @DynamoDBDocument
 public class Answers {
 
-
-
+    private String lang;
     private List<String> answers;
 
     @DynamoDBAttribute(attributeName = "answers")
@@ -19,6 +18,14 @@ public class Answers {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 
 }

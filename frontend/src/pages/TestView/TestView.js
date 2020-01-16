@@ -41,6 +41,7 @@ export default function TestView(props) {
 
   function send(e) {
     let answerSheet = {
+      lang: "PL",
       answers: answers
     };
     apiRequest({

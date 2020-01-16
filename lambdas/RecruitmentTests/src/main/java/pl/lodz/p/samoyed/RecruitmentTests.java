@@ -199,9 +199,20 @@ public class RecruitmentTests {
 
     private List<Question> prepareQuestions(Answers answers, List<TestContent> tc) {
         List<String> fromInput = answers.getAnswers();
+        String lang = answers.getLang();
 
         List<Question> questions = new LinkedList<>();
-        List<Question> questionsFromTC = tc.get(0).getQuestions();
+        List<Question> questionsFromTC;
+
+        String langOriginal = tc.get(0).getLang();
+        int whichVersion;
+
+        if (tc.get(1) == null)
+           whichVersion = 0;
+        else if (langOriginal.equals(lang)) whichVersion = 0;
+        else whichVersion = 1;
+
+        questionsFromTC = tc.get(whichVersion).getQuestions();
 
         for(int i = 0; i < fromInput.size(); i++) {
             Question q = new Question();
