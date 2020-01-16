@@ -363,7 +363,7 @@ const TestCreate = props => {
             <option value="EN">EN</option>
           </select>
           <label className="form-check-label ml-2">Wersja językowa</label>
-          <Button onClick={translateTestToEng} className="ml-auto">
+          <Button disabled={(title["PL"] === '')} onClick={translateTestToEng} className="ml-auto">
             Przetłumacz na ENG
           </Button>
         </div>
