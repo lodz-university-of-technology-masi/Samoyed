@@ -1,4 +1,4 @@
-import React, { useState, useEffect, version} from "react";
+import React, { useState, useEffect, version } from "react";
 import "./Tests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
@@ -28,6 +28,31 @@ export default function Tests() {
     //   return t.author === userId;
     // });
     return loadedTests;
+  };
+
+  const assignCandidateToTest = (candidateId, testId) => {
+    let candidate = {
+      assigneeId: candidateId,
+      availableFrom: 0,
+      availableTo: 0
+    };
+    
+    apiRequest({
+      method: "POST",
+      path: `tests/assign/${testId}`,
+      body: candidate,
+      success: function(res) {
+        console.log(res);
+      },
+      error: function(err) {
+        console.log(err);
+        setError(true);
+        setErrorData({
+          msg: JSON.parse(err.response).error,
+          status: err.status
+        });
+      }
+    });
   };
 
   function deleteTest(id) {
@@ -76,66 +101,77 @@ export default function Tests() {
   }
 
   function exportCSV(id) {
-    let test
+    let test;
     apiRequest({
-			method: "GET",
-			path: "tests/id/" + id,
-			success: function(res) {
-				test = JSON.parse(res.responseText)
+      method: "GET",
+      path: "tests/id/" + id,
+      success: function(res) {
+        test = JSON.parse(res.responseText);
 
-        let ver_CSV = "", 
-            lang,
-            question ="",
-            moreQuestions ="", 
-            answers, 
-            ans_res, 
-            title
+        let ver_CSV = "",
+          lang,
+          question = "",
+          moreQuestions = "",
+          answers,
+          ans_res,
+          title;
 
-        ver_CSV += test.versions.length + "\n"
+        ver_CSV += test.versions.length + "\n";
 
-        for(var i = 0; i < test.versions.length; i++){
-          if(i > 0) ver_CSV += '\n'
-          lang = ";" + test.versions[i].lang
-          if(lang == ";EN"){
-            title = prompt("Please enter title for imported test:", test.versions[i].title);
+        for (var i = 0; i < test.versions.length; i++) {
+          if (i > 0) ver_CSV += "\n";
+          lang = ";" + test.versions[i].lang;
+          if (lang == ";EN") {
+            title = prompt(
+              "Please enter title for imported test:",
+              test.versions[i].title
+            );
           } else {
-            title = prompt("Proszę wprowadzić tytuł importowanego testu:", test.versions[i].title);
+            title = prompt(
+              "Proszę wprowadzić tytuł importowanego testu:",
+              test.versions[i].title
+            );
           }
-          title += ";" + test.versions[i].questions.length + lang
-          for(var j = 0; j < test.versions[i].questions.length; j++){
-
-            question = "\n" + j + ";" + test.versions[i].questions[j].type + ";" + test.versions[i].questions[j].content
+          title += ";" + test.versions[i].questions.length + lang;
+          for (var j = 0; j < test.versions[i].questions.length; j++) {
+            question =
+              "\n" +
+              j +
+              ";" +
+              test.versions[i].questions[j].type +
+              ";" +
+              test.versions[i].questions[j].content;
             if (test.versions[i].questions[j].type === "W") {
               // Close question
-              answers = test.versions[i].questions[j].answers.split("|")
-              ans_res = ";" + answers.length
-              for(var z = 0; z < answers.length; z++){
-                answers[z] = answers[z].split(';').join('=')
-                ans_res += ";" + answers[z]
+              answers = test.versions[i].questions[j].answers.split("|");
+              ans_res = ";" + answers.length;
+              for (var z = 0; z < answers.length; z++) {
+                answers[z] = answers[z].split(";").join("=");
+                ans_res += ";" + answers[z];
               }
             } else {
               ans_res = ";" + test.versions[i].questions[j].answers;
             }
-            question += ans_res
+            question += ans_res;
             moreQuestions += question;
           }
           ver_CSV += title + moreQuestions;
-          title = ""
-          moreQuestions = ""
+          title = "";
+          moreQuestions = "";
         }
 
         const element = document.createElement("a");
-        const file = new Blob([ver_CSV], {type: 'text/plain'});
+        const file = new Blob([ver_CSV], { type: "text/plain" });
         element.href = URL.createObjectURL(file);
         element.download = "csv_export.csv";
         document.body.appendChild(element); // Required for this to work in FireFox
-        element.click();      
-			},	
-			error: function(err) {
-				console.log(err)
-				// ??
-			}
-		})
+        element.click();
+      },
+      error: function(err) {
+        console.log(err);
+        // ??
+      }
+    });
   }
 
   if (!loaded && !error) {
@@ -156,6 +192,9 @@ export default function Tests() {
   } else {
     return (
       <TestPanel
+        assignCandidateToTest={(candidateId, testId) =>
+          assignCandidateToTest(candidateId, testId)
+        }
         deleteTest={id => deleteTest(id)}
         exportCSV={id => exportCSV(id)}
         refreshTest={() => refreshTest()}

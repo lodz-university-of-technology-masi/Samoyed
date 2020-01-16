@@ -5,7 +5,15 @@ import Loader from "../Loader/Loader";
 import Canditate from "../Candidate/Candidate";
 
 const CandidatePicker = props => {
-  const { show, setShow, title, users, loading } = props;
+  const {
+    show,
+    setShow,
+    title,
+    users,
+    loading,
+    testId,
+    assignCandidateToTest
+  } = props;
   const [picked, setPicked] = useState(false);
   const [id, setId] = useState();
 
@@ -21,8 +29,9 @@ const CandidatePicker = props => {
   };
 
   const saveChanges = () => {
+    assignCandidateToTest(id, testId);
     handleClose();
-  }
+  };
 
   const renderUsers = () => {
     if (users !== undefined) {
@@ -35,9 +44,9 @@ const CandidatePicker = props => {
           return a.name === "sub";
         });
         return (
-          <Row key={id}>
+          <Row>
             <Canditate
-              chooseUser={(id) => chooseUser(id)}
+              chooseUser={id => chooseUser(id)}
               id={id.value}
               email={email.value}
             />

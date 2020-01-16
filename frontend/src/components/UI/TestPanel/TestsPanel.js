@@ -6,10 +6,8 @@ import './TestsPanel.css';
 
 
 const TestPanel = (props) => {
-    const {testsList, deleteTest, refreshTest, exportCSV} = props;
+    const {testsList, deleteTest, refreshTest, exportCSV, assignCandidateToTest} = props;
     const userGroup = useSelector(state => state.data['cognito:groups'][0]);
-    console.log(testsList);    
-
     return (
         <>
         <table className="table">
@@ -24,6 +22,7 @@ const TestPanel = (props) => {
             {testsList.map((test, i) => {
               return (
                 <Test
+                  assignCandidateToTest={(candidateId, testId) => assignCandidateToTest(candidateId, testId)}
                   userGroup={userGroup}
                   key={i}
                   createdOn={test.createdOn}

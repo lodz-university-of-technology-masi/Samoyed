@@ -21,7 +21,6 @@ export default function TestLoader(props)
 			path: "tests/id/" + params.id,
 			success: function(res) {
 				test = JSON.parse(res.responseText)
-
 				setId(test.id)
 				setVersions(test.versions)
 				formattedData.id = test.id
@@ -38,7 +37,6 @@ export default function TestLoader(props)
 
 
 	const formatData = function() {
-
 		if (viewVersion >= 0){
 			for(var i = 0; i < test.versions.length; i++){
 				for(var j = 0; j < test.versions[i].questions.length; j++){
