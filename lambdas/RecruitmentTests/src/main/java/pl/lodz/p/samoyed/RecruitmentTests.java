@@ -43,7 +43,7 @@ public class RecruitmentTests {
 
     }
 
-    public Response update(Map<String, Object> input, Context context) {
+    public Response updateTest(Map<String, Object> input, Context context) {
         return new ResponseBuilder()
                 .withRequestData(input)
                 .withHandler((Request req, Response res) -> {
@@ -52,12 +52,43 @@ public class RecruitmentTests {
                     if (test == null) {
                         throw new ApiException("Test does not exist.", 404);
                     }
+                    List<Assignment> assignments;
+                    if (test.getAssignments() == null) assignments = new LinkedList<>();
+                    else assignments = test.getAssignments();
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                     if (user.getGroups().contains("recruiters")) {
                         test = om.readValue(req.getBody(), Test.class);
                         test.setAuthor(user.getUserId());
                         test.setCreatedOn(System.currentTimeMillis());
                         test.setId(testId);
+                        test.setAssignments(assignments);
+                        mapper.save(test);
+                        res.body = om.writeValueAsString(test);
+                        res.statusCode = 204;
+                    } else {
+                        throw new ApiException("You must be recruiter to perform this action.");
+                    }
+                    res.headers.put("Content-type", "application/json");
+                }).handle();
+    }
+
+    public Response assignUserToTest(Map<String, Object> input, Context context) {
+        return new ResponseBuilder()
+                .withRequestData(input)
+                .withHandler((Request req, Response res) -> {
+                    String testId = (String) req.getPathParameters().get("id");
+                    Test test = mapper.load(Test.class, testId);
+                    if (test == null) {
+                        throw new ApiException("Test does not exist.", 404);
+                    }
+                    List<Assignment> assignments;
+                    if (test.getAssignments() == null) assignments = new LinkedList<>();
+                    else assignments = test.getAssignments();
+                    UserIdentity user = new UserIdentity(req.getCognitoIdToken());
+                    if (user.getGroups().contains("recruiters")) {
+                        Assignment assignment = om.readValue(req.getBody(), Assignment.class);
+                        assignments.add(assignment);
+                        test.setAssignments(assignments);
                         mapper.save(test);
                         res.body = om.writeValueAsString(test);
                         res.statusCode = 204;
