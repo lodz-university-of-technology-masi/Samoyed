@@ -25,7 +25,7 @@ public class Request {
         return headers;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 

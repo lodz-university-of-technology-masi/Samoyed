@@ -41,11 +41,20 @@ export default function TestView(props) {
 
   function send(e) {
     let answerSheet = {
-      testId: id,
       answers: answers
     };
-    console.log(answerSheet);
-    e.preventDefault();
+    apiRequest({
+      method: "POST",
+      path: "tests/solve/" + params.id,
+      body: answerSheet,
+      success: function(res) {
+        console.log(res);
+      },
+      error: function(err) {
+        console.log(err);
+        // ??
+      }
+    });
   }
 
   // Renders all the divs containing different types of questions
