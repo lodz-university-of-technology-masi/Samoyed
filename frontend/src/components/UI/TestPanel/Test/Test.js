@@ -17,7 +17,8 @@ const Test = props => {
 		deleteTest,
 		exportCSV,
 		userGroup,
-		assignCandidateToTest
+		assignCandidateToTest,
+		assignments,
 	} = props;
 
 	useEffect(() => {
@@ -79,6 +80,7 @@ const Test = props => {
 					assignCandidateToTest={(candidateId, testId) =>
 						assignCandidateToTest(candidateId, testId)
 					}
+					assignments={assignments}
 					loading={loading}
 					users={users}
 					title={versions[0].title}

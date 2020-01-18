@@ -107,7 +107,7 @@ const TestPanel = props => {
 
   return (
     <>
-      {renderModal()};
+      {renderModal()}
       <table className="table">
         <thead>
           <tr>
@@ -128,6 +128,7 @@ const TestPanel = props => {
                 createdOn={test.createdOn}
                 id={test.id}
                 versions={test.versions}
+                assignments={test.assignments}
                 deleteTest={() => deleteTest(test.id)}
                 exportCSV={() => exportCSV(test.id)}
               />
@@ -148,7 +149,7 @@ const TestPanel = props => {
           </Button>
         </Col>
         <Col md={4}>
-          <Link className="w-100" block to="/test/create">
+          <Link className="w-100" to="/test/create">
             {userGroup === "recruiters" && (
               <Button className="w-100" block variant="outline-primary">
                 Dodaj nowy test

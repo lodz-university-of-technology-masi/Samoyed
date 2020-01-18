@@ -12,7 +12,8 @@ const CandidatePicker = props => {
     users,
     loading,
     testId,
-    assignCandidateToTest
+    assignCandidateToTest,
+    assignments
   } = props;
   const [picked, setPicked] = useState(false);
   const [id, setId] = useState();
@@ -34,6 +35,10 @@ const CandidatePicker = props => {
   };
 
   const renderUsers = () => {
+    let assignedUsersId = [];
+    assignments.forEach(u => {
+      assignedUsersId.push(u.assigneeId);
+    });
     if (users !== undefined) {
       return users.map(user => {
         let attributes = user.attributes;
@@ -43,15 +48,19 @@ const CandidatePicker = props => {
         let id = attributes.find(a => {
           return a.name === "sub";
         });
-        return (
-          <Row key={id.value}>
-            <Canditate
-              chooseUser={id => chooseUser(id)}
-              id={id.value}
-              email={email.value}
-            />
-          </Row>
-        );
+        if (!assignedUsersId.includes(id.value)) {
+          return (
+            <Row key={id.value}>
+              <Canditate
+                chooseUser={id => chooseUser(id)}
+                id={id.value}
+                email={email.value}
+              />
+            </Row>
+          );
+        } else {
+          return null;
+        }
       });
     }
   };
