@@ -257,32 +257,42 @@ const TestCreate = props => {
     setUploading(false);
   };
 
-  const translateTestToEng = () => {
-    const newTitle = {
-      ...title,
-      EN: translate(title["PL"], "en")
-    };
+  const translateTest = (ver) => {
+    let desiredVersion;
+    ver === "PL" ? desiredVersion = "EN" : desiredVersion = "PL";
+    let newTitle;
+    if(desiredVersion === "EN"){
+      newTitle = {
+        ...title,
+        EN: translate(title[ver], desiredVersion.toLowerCase())
+      }
+    } else {
+      newTitle = {
+        ...title,
+        PL: translate(title[ver], desiredVersion.toLowerCase())
+      }
+    }
     setTitle(newTitle);
     let translatedQuestions = { ...questions };
-    for (let q in translatedQuestions["PL"]) {
+    for (let q in translatedQuestions[ver]) {
       let translatedAnswers = [];
-      if (translatedQuestions["PL"][q].type === "W") {
-        translatedQuestions["PL"][q].answers.forEach((a, i) => {
-          const value = translate(translatedQuestions["PL"][q].answers[i].value, "en")
+      if (translatedQuestions[ver][q].type === "W") {
+        translatedQuestions[ver][q].answers.forEach((a, i) => {
+          const value = translate(translatedQuestions[ver][q].answers[i].value, desiredVersion.toLowerCase())
           return translatedAnswers.push({
             ...a,
             value
           });
         });
       } else {
-        translatedAnswers = translate(translatedQuestions["PL"][q].answers, "en");
+        translatedAnswers = translate(translatedQuestions[ver][q].answers, desiredVersion.toLowerCase());
       }
       let t = {
-        ...translatedQuestions["PL"][q],
-        content: translate(translatedQuestions["PL"][q].content, "en"),
+        ...translatedQuestions[ver][q],
+        content: translate(translatedQuestions[ver][q].content, desiredVersion.toLowerCase()),
         answers: translatedAnswers
       };
-      translatedQuestions["EN"][q] = t;
+      translatedQuestions[desiredVersion][q] = t;
     }
     setQuestions(translatedQuestions);
   };
@@ -363,8 +373,8 @@ const TestCreate = props => {
             <option value="EN">EN</option>
           </select>
           <label className="form-check-label ml-2">Wersja językowa</label>
-          <Button disabled={(title["PL"] === '')} onClick={translateTestToEng} className="ml-auto">
-            Przetłumacz na ENG
+          <Button disabled={(title[version] === '')} onClick={() => translateTest(version)} className="ml-auto">
+            Przetłumacz na {version === "PL" ? "EN" : "PL"}
           </Button>
         </div>
         <div className="form-group row">
@@ -401,7 +411,7 @@ const TestCreate = props => {
         </div>
 
         <div>
-          <CSVReader onFileLoaded={csvContent => readCSVFile(csvContent)} />
+          <CSVReader label="Importuj CSV" cssClass="form-group" cssInputClass="form-control-file" onFileLoaded={csvContent => readCSVFile(csvContent)} />
         </div>
       </>
     );
