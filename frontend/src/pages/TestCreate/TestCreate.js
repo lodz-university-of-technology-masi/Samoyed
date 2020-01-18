@@ -209,7 +209,7 @@ const TestCreate = props => {
           if (q.type === "W") {
             // Format all choice answers into single string
             let answers = q.answers.map(a => {
-              if(a === ""){
+              if(a.value === ""){
                 proper = false;
                 return false;
               }
