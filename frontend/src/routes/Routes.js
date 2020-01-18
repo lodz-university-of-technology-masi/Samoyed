@@ -6,6 +6,7 @@ import Team from "../pages/Team/Team";
 import SignUp from "../pages/SignUp/SignUp";
 import Logout from "../components/Logout/Logout";
 import { useSelector } from "react-redux";
+import Evaluation from "../components/Evaluation/Evaluation";
 
 const TestCreate = React.lazy(() => {
   return import("../pages/TestCreate/TestCreate");
@@ -59,6 +60,11 @@ const Routes = props => {
           path="/test/:id"
           exact
           render={props => <TestView {...props} />}
+        />
+        <Route
+          path="/evaluate/:id"
+          exact
+          render={props => <Evaluation {...props} />}
         />
         <Route path="/profile" exact render={props => <Profile {...props} />} />
         <Route path="/logout" exact component={Logout} />

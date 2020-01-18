@@ -365,21 +365,16 @@ public class RecruitmentTests {
                         throw new ApiException("Test does not exist.", 404);
                     }
 
-                    String id = solvedTest.getId();
-                    String solvedBy = solvedTest.getSolvedBy();
-                    Long solvedOn = solvedTest.getSolvedOn();
-                    String testId = solvedTest.getTestId();
-                    List<SolvedTestContent> versions = solvedTest.getVersions();
-
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                     if (user.getGroups().contains("recruiters")) {
-                        solvedTest = om.readValue(req.getBody(), SolvedTest.class);
-                        solvedTest.setSolvedBy(solvedBy);
-                        solvedTest.setSolvedOn(solvedOn);
-                        solvedTest.setId(id);
-                        solvedTest.setTestId(testId);
+                        Evaluations ev = om.readValue(req.getBody(), Evaluations.class);
+
+                        List<SolvedTestContent> versions = solvedTest.getVersions();
+                        versions.get(0).setEvaluations(ev.getEvaluations());
+                        if (versions.size() == 2)	versions.get(1).setEvaluations(ev.getEvaluations());
                         solvedTest.setVersions(versions);
                         solvedTest.setEvaluated(true);
+
                         mapper.save(solvedTest);
                         res.body = om.writeValueAsString(solvedTest);
                         res.statusCode = 204;

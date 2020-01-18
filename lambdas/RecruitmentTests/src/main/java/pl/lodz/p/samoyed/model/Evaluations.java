@@ -6,18 +6,17 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import java.util.List;
 
 @DynamoDBDocument
-public class Answers {
+public class Evaluations {
 
     private String lang;
-    private List<String> answers;
+    private List<Boolean> evaluations;
 
-    @DynamoDBAttribute(attributeName = "answers")
-    public List<String> getAnswers() {
-        return answers;
+    @DynamoDBAttribute(attributeName = "evaluations")
+    public List<Boolean> getEvaluations() {
+        return evaluations;
     }
-
-    public void setAnswers(List<String> answers) {
-        this.answers = answers;
+    public void setEvaluations(List<Boolean> evaluations) {
+        this.evaluations = evaluations;
     }
 
     @DynamoDBAttribute(attributeName = "lang")
