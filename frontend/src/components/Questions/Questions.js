@@ -7,6 +7,7 @@ const Questions = props => {
       <div key={i}>
         <div className="form-inline row" key={i}>
           <input
+            required
             className="form-control mr-2 mb-2"
             placeholder="Pytanie"
             value={q.content}
@@ -15,6 +16,7 @@ const Questions = props => {
             }}
           />
           <select
+            required
             className="form-control mr-2 mb-2"
             value={q.type}
             onChange={e => {

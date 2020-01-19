@@ -19,6 +19,57 @@ const TestCreate = props => {
   const [error, setError] = useState(false);
   const [errorData, setErrorData] = useState({ msg: "", status: "" });
   const params = useParams();
+  const [isValid, setIsValid] = useState(false);
+  const [isTranslatable, setIsTranslatable] = useState(false);
+
+  const checkValidity = () => {
+    let validity = true;
+    let translatable = false;
+    let modTitle = { ...title }
+    if((!modTitle["PL"] || 0 === modTitle["PL"].length) && (!modTitle["EN"] || 0 === modTitle["EN"].length)){
+      validity = false;
+    }
+    else if((!modTitle["PL"] || 0 === modTitle["PL"].length) && (!(!modTitle["EN"] || 0 === modTitle["EN"].length))){
+      validity = checkQuestionsValidity("EN");
+    }
+    else if(!(!modTitle["PL"] || 0 === modTitle["PL"].length) && ((!modTitle["EN"] || 0 === modTitle["EN"].length))){
+      validity = checkQuestionsValidity("PL");
+    } else {
+      validity = checkQuestionsValidity("PL") && checkQuestionsValidity("EN");
+    }
+    if(version === "PL" && ((modTitle["PL"] !== '') && checkQuestionsValidity("PL"))){
+      translatable = true;
+    } else if (version === "EN" && ((modTitle["EN"] !== '') && checkQuestionsValidity("EN"))){
+      translatable = true;
+    }
+
+    setIsTranslatable(translatable);
+    setIsValid(validity);
+  };
+ 
+  const checkQuestionsValidity = (lang) => {
+    let validity = true
+    for (let i in questions[lang]) {
+      if (
+        (questions[lang][i].content === "" ||
+        questions[lang][i].content === " ")
+      ) {
+        validity = false;
+      }
+      if (questions[lang][i].type === "W") {
+        questions[lang][i].answers.forEach((a, j) => {
+          if (
+            questions[lang][i].answers[j].value === "" ||
+            questions[lang][i].answers[j].value === " "
+          )
+            validity = false;
+        });
+      } else if(questions[lang][i].answers === "" || questions[lang][i].answers === " ") {
+        validity = false;
+      }
+    }
+    return validity
+  }
 
   useEffect(() => {
     if (!loaded) {
@@ -73,8 +124,10 @@ const TestCreate = props => {
             }
           }
         }
+        checkValidity();
       } else {
         setQuestions({ PL: [], EN: [] });
+        checkValidity();
       }
       setLoaded(true);
     }
@@ -117,6 +170,7 @@ const TestCreate = props => {
     newQuestions["PL"].push({ ...q });
     newQuestions["EN"].push({ ...q });
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   function deleteQuestion(e) {
@@ -124,6 +178,7 @@ const TestCreate = props => {
     newQuestions["PL"].splice(e.target.name, 1);
     newQuestions["EN"].splice(e.target.name, 1);
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   // Creation Methods
@@ -131,28 +186,33 @@ const TestCreate = props => {
     let newTitle = { ...title };
     newTitle[version] = e.target.value;
     setTitle(newTitle);
+    checkValidity();
   }
 
   function changeContentCreation(n, value) {
     let newQuestions = { ...questions };
     newQuestions[version][n].content = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   function changeAnswersSimpleCreation(n, value) {
     let newQuestions = { ...questions };
     newQuestions[version][n].answers = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
   function changeAnswersComplexCreation(n, m, value) {
     let newQuestions = { ...questions };
     newQuestions[version][n].answers[m].value = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
   function changeAnswersCorrectCreation(n, m, value) {
     let newQuestions = { ...questions };
     newQuestions[version][n].answers[m].correct = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   // Edit Methods
@@ -160,30 +220,35 @@ const TestCreate = props => {
     let newTitle = title;
     newTitle[ver] = newT;
     setTitle(newTitle);
+    checkValidity();
   }
 
   function changeContentEdit(n, value, ver) {
     let newQuestions = { ...questions };
     newQuestions[ver][n].content = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   function changeAnswersSimpleEdit(n, value, ver) {
     let newQuestions = { ...questions };
     newQuestions[ver][n].answers = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   function changeAnswersComplexEdit(n, m, value, ver) {
     let newQuestions = { ...questions };
     newQuestions[ver][n].answers[m].value = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   function changeAnswersCorrectEdit(n, m, value, ver) {
     let newQuestions = { ...questions };
     newQuestions[ver][n].answers[m].correct = value;
     setQuestions(newQuestions);
+    checkValidity();
   }
 
   // Request Methods
@@ -373,7 +438,7 @@ const TestCreate = props => {
             <option value="EN">EN</option>
           </select>
           <label className="form-check-label ml-2">Wersja językowa</label>
-          <Button disabled={(title[version] === '')} onClick={() => translateTest(version)} className="ml-auto">
+          <Button disabled={!isTranslatable} onClick={() => translateTest(version)} className="ml-auto">
             Przetłumacz na {version === "PL" ? "EN" : "PL"}
           </Button>
         </div>
@@ -405,8 +470,8 @@ const TestCreate = props => {
           >
             Dodaj pytanie
           </button>
-          <button className="btn btn-primary col-12" onClick={send}>
-            Zapisz
+          <button as="input" type="submit" disabled={!isValid} className="btn btn-primary col-12" onClick={send}>
+            {isValid ? "Zapisz" : "Nie można wysłać niekompletnego formularza"}
           </button>
         </div>
 

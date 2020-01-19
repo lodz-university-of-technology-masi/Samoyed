@@ -17,6 +17,7 @@ const AnswersBlock = props => {
               checked={props.q.answers[m].correct}
             />
             <input
+              required
               className="form-control mr-2"
               placeholder={"Odpowiedź " + (m + 1)}
               onChange={e => {
@@ -35,6 +36,7 @@ const AnswersBlock = props => {
       return (
         <div className="form-group row">
           <input
+            required
             className="form-control"
             placeholder="Odpowiedzi"
             value={props.q.answers}
