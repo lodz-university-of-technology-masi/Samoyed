@@ -246,6 +246,7 @@ public class RecruitmentTests {
                         solvedTestContent.setQuestions(questions);
                         solvedTestContent.setEvaluations(null);
                         solvedTestContent.setTitle(title);
+                        solvedTestContent.setLang(om.readValue(req.getBody(), Answers.class).getLang());
 
                         List<SolvedTestContent> versions = new LinkedList<>();
                         versions.add(solvedTestContent);
