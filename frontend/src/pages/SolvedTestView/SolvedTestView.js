@@ -11,25 +11,20 @@ const SolvedTestView = props => {
   const [title, setTitle] = useState();
 
   useEffect(() => {
-    fetchEvaluatedTestData();
-  }, []);
-
-  const fetchEvaluatedTestData = () => {
     apiRequest({
-      method: "GET",
-      path: "/SolvedTestGetById/id/" + params.id,
-      success: function(res) {
-        console.log(JSON.parse(res.response));
-        setRecruiterAnswers(JSON.parse(res.response).versions[0]);
-        setIsEvaluated(JSON.parse(res.response).evaluated);
-        setTitle(JSON.parse(res.response).versions[0].title);
-      },
-      error: function(err) {
-        console.log(err);
-        // ??
-      }
-    });
-  };
+        method: "GET",
+        path: "/SolvedTestGetById/id/" + params.id,
+        success: function(res) {
+          setRecruiterAnswers(JSON.parse(res.response).versions[0]);
+          setIsEvaluated(JSON.parse(res.response).evaluated);
+          setTitle(JSON.parse(res.response).versions[0].title);
+        },
+        error: function(err) {
+          console.log(err);
+          // ??
+        }
+      });
+  }, [params.id]);
 
   const renderRecruiterAnswers = () => {
     if (recruiterAnswers !== undefined) {
@@ -96,7 +91,7 @@ const SolvedTestView = props => {
       });
     }
     return points;
-  }, [recruiterAnswers]);
+  }, [recruiterAnswers, isEvaluated]);
 
   const maxPoints = useMemo(() => {
     if (recruiterAnswers !== undefined) {

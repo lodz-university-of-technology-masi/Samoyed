@@ -20,7 +20,7 @@ function Profile() {
     setGender(state.data.gender);
     setFamilyName(state.data.family_name);
     setGivenName(state.data.given_name);
-  }, [state.data.gender]);
+  }, [state.data.gender, state.data.family_name, state.data.given_name]);
 
   const givenNameChanged = e => {
     let newGivenName = { ...state.given_name };

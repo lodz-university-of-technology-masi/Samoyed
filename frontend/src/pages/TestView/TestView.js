@@ -53,7 +53,6 @@ const TestView = props => {
       path: "tests/solve/" + params.id,
       body: answerSheet,
       success: function(res) {
-        console.log(res);
         history.push("/solvedtests");
       },
       error: function(err) {

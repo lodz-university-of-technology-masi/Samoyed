@@ -1,4 +1,4 @@
-import React, { useState, useEffect, version } from "react";
+import React, { useState, useEffect } from "react";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import { Row } from "react-bootstrap";
@@ -17,7 +17,6 @@ const Evaluation = props => {
       path: "SolvedTestGetById/id/" + params.id,
       success: function(res) {
         let solvedTest = JSON.parse(res.responseText);
-        console.log(solvedTest);
         setVersions(solvedTest.versions);
         setViewVersion(0);
         setLoaded(true);
@@ -27,10 +26,6 @@ const Evaluation = props => {
       }
     });
   }, [params.id]);
-
-  function changeVersion(e) {
-    setViewVersion(e.target.value);
-  }
 
   const evaluateAnswer = e => {
     let newEvaluations = [...evaluations];
@@ -43,7 +38,6 @@ const Evaluation = props => {
       lang: "PL",
       evaluations: evaluations
     };
-    console.log(evaluationSheet);
     apiRequest({
       method: "PUT",
       path: "SolvedTestEvaluation/id/" + params.id,

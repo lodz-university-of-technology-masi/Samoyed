@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Test from "./Test/Test";
 import { useSelector } from "react-redux";
@@ -15,6 +15,10 @@ const TestPanel = props => {
   const [user, setUser] = useState({
     login: "",
     password: ""
+  });
+
+  useEffect(() => {
+    return () => {};
   });
 
   function signIn(e) {
@@ -61,7 +65,7 @@ const TestPanel = props => {
         </Modal.Header>
         <Modal.Body>
           {isLoading ? (
-            <Loader/>
+            <Loader />
           ) : (
             <>
               <Row>
@@ -105,68 +109,78 @@ const TestPanel = props => {
     );
   };
 
-  return (
-    <>
-      {renderModal()}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Tytuł</th>
-            <th>Ostatnia modyfikacja:</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          {testsList.map((test, i) => {
-            return (
-              <Test
-                assignCandidateToTest={(candidateId, testId) =>
-                  assignCandidateToTest(candidateId, testId)
-                }
-                userGroup={userGroup}
-                key={i}
-                createdOn={test.createdOn}
-                id={test.id}
-                versions={test.versions}
-                assignments={test.assignments}
-                deleteTest={() => deleteTest(test.id)}
-                exportCSV={() => exportCSV(test.id)}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-      <Row>
-        <Col md={4}>
-          <Button
-            block
-            variant="outline-primary"
-            onClick={e => {
-              refreshTest();
-            }}
-          >
-            Odśwież testy
-          </Button>
-        </Col>
-        <Col md={4}>
-          <Link className="w-100" to="/test/create">
-            {userGroup === "recruiters" && (
-              <Button className="w-100" block variant="outline-primary">
-                Dodaj nowy test
+  const renderContent = () => {
+    if (testsList !== undefined) {
+      return (
+        <>
+          {renderModal()}
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Tytuł</th>
+                <th>Ostatnia modyfikacja:</th>
+                <th>Akcje</th>
+              </tr>
+            </thead>
+            <tbody>
+              {testsList.map((test, i) => {
+                return (
+                  <Test
+                    assignCandidateToTest={(candidateId, testId) =>
+                      assignCandidateToTest(candidateId, testId)
+                    }
+                    userGroup={userGroup}
+                    key={i}
+                    createdOn={test.createdOn}
+                    id={test.id}
+                    versions={test.versions}
+                    assignments={test.assignments}
+                    deleteTest={() => deleteTest(test.id)}
+                    exportCSV={() => exportCSV(test.id)}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+          <Row>
+            <Col md={4}>
+              <Button
+                block
+                variant="outline-primary"
+                onClick={e => {
+                  refreshTest();
+                }}
+              >
+                Odśwież testy
               </Button>
-            )}
-          </Link>
-        </Col>
-        <Col md={4}>
-          {userGroup === "recruiters" && (
-            <Button onClick={() => handleShow()} block variant="outline-dark">
-              Utwórz konto kandydata
-            </Button>
-          )}
-        </Col>
-      </Row>
-    </>
-  );
+            </Col>
+            <Col md={4}>
+              <Link className="w-100" to="/test/create">
+                {userGroup === "recruiters" && (
+                  <Button className="w-100" block variant="outline-primary">
+                    Dodaj nowy test
+                  </Button>
+                )}
+              </Link>
+            </Col>
+            <Col md={4}>
+              {userGroup === "recruiters" && (
+                <Button
+                  onClick={() => handleShow()}
+                  block
+                  variant="outline-dark"
+                >
+                  Utwórz konto kandydata
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </>
+      );
+    }
+  };
+
+  return renderContent();
 };
 
 export default TestPanel;

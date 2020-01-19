@@ -437,7 +437,6 @@ const TestCreate = props => {
   };
 
   function readCSVFile(csvContent) {
-    console.log(csvContent);
     let lang_num = csvContent[0][0];
     let lang, q_type;
     csvContent.shift();

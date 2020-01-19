@@ -14,7 +14,6 @@ export function detectLang (text)  {
     const response = `https://translate.yandex.net/api/v1.5/tr.json/detect?key=${translatorKey}&text=${text}`;
     let json = httpGet(response);
     let input = JSON.parse(json);
-    //console.log(output);
     return input.lang;
 
 }

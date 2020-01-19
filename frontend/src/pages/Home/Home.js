@@ -20,8 +20,13 @@ export default function Home() {
       error: function(err) {
         console.log(err);
       }
+
     });
-  }, []);
+
+    return () => {
+        
+    }
+  }, [path]);
 
   const nrOfTests = Object.keys(testsList).length;
 

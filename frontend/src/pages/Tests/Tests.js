@@ -56,7 +56,6 @@ export default function Tests() {
       path: `tests/assign/${testId}`,
       body: candidate,
       success: function(res) {
-        console.log(res);
       },
       error: function(err) {
         console.log(err);
