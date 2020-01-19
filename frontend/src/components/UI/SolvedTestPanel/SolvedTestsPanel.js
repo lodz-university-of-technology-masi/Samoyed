@@ -9,8 +9,7 @@ const SolvedTestPanel = props => {
 
   const {
     solvedTestsList,
-    refreshTest,
-    exportCSV
+    refreshTest
   } = props;
 
   const userGroup = useSelector(state => state.data["cognito:groups"][0]);
@@ -38,7 +37,6 @@ const SolvedTestPanel = props => {
                 isEvaluated={test.evaluated}
                 id={test.id}
                 versions={test.versions}
-                exportCSV={() => exportCSV(test.id)}
               />
             );
           })}

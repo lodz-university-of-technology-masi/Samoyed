@@ -13,7 +13,6 @@ const SolvedTest = props => {
 		id,
 		versions,
 		isEvaluated,
-		exportCSV,
 		userGroup,
 	} = props;
 
@@ -59,18 +58,9 @@ const SolvedTest = props => {
 		return (
 			<Row>
 				<Col style={{ padding: "0" }}>
-					<DropdownButton variant="outline-secondary" title={`Opcje`}>
-						<Dropdown.Item onClick={() => {
-							exportCSV(id);
-						}}>
-							Pobierz CSV
-						</Dropdown.Item>
-						<LinkContainer to={`/evaluate/${id}`}>
-							<Dropdown.Item>
-								Oceń
-            				</Dropdown.Item>
-						</LinkContainer>
-					</DropdownButton>
+					<Link to={`/evaluate/${id}`}>
+						<button className="btn btn-primary mr-1">Oceń</button>
+					</Link>
 				</Col>
 			</Row>
 		);
