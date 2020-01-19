@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./SolvedTests.css";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
-import _ from "underscore";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import SolvedTestPanel from "../../components/UI/SolvedTestPanel/SolvedTestsPanel";
+import { withRouter } from "react-router";
 
 const SolvedTests = () => {
   const [loaded, setLoaded] = useState(false);
@@ -17,7 +17,7 @@ const SolvedTests = () => {
       method: "GET",
       path: "SolvedTestsGetForUser",
       success: function(res) {
-        setSolvedTestsList(assignTestsForUser(res));
+        setSolvedTestsList(JSON.parse(res.responseText));
         setLoaded(true);
       },
       error: function(err) {
@@ -32,16 +32,26 @@ const SolvedTests = () => {
   },[])
 
   useEffect(() => {
-    refreshTest();
-  }, [refreshTest]);
+      apiRequest({
+        method: "GET",
+        path: "SolvedTestsGetForUser",
+        success: function(res) {
+          setSolvedTestsList(JSON.parse(res.responseText));
+          setLoaded(true);
+        },
+        error: function(err) {
+          console.log(err);
+          setError(true);
+          setErrorData({
+            msg: JSON.parse(err.response).error,
+            status: err.status
+          });
+        }
+      });
+  }, []);
 
   const handleClose = () => {
     setError(false);
-  };
-
-  const assignTestsForUser = res => {
-    const loadedTests = JSON.parse(res.responseText);
-    return loadedTests;
   };
 
   function exportCSV(id) {
@@ -142,6 +152,6 @@ const SolvedTests = () => {
       />
     );
   }
-}
+};
 
-export default SolvedTests;
+export default withRouter(SolvedTests);

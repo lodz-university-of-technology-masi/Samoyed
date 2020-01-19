@@ -21,7 +21,7 @@ export default function Home() {
         console.log(err);
       }
     });
-  }, [path]);
+  }, []);
 
   const nrOfTests = Object.keys(testsList).length;
 

@@ -57,7 +57,6 @@ function Profile() {
       }
     });
     dispatch(userUpdate(profileData));
-    console.log(profileData);
   };
 
   return (

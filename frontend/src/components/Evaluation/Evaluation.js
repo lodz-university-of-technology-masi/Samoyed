@@ -1,11 +1,11 @@
 import React, { useState, useEffect, version } from "react";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
+import { Row } from "react-bootstrap";
 
 const Evaluation = props => {
     const [params] = useState({ ...props.match.params });
     const [loaded, setLoaded] = useState(false);
-    const [id, setId] = useState("");
     const [versions, setVersions] = useState([]);
     const [evaluations, setEvaluations] = useState([]);
     const [viewVersion, setViewVersion] = useState(-1);
@@ -16,7 +16,6 @@ const Evaluation = props => {
             path: "SolvedTestGetById/id/" + params.id,
             success: function(res) {
                 let solvedTest = JSON.parse(res.responseText);
-                setId(solvedTest.id);
                 setVersions(solvedTest.versions);
                 setViewVersion(0);
                 setLoaded(true);
@@ -66,8 +65,10 @@ const Evaluation = props => {
                 <div className="card-header">{i + 1 + ". " + q.content}</div>
             );
             divs.push(
-                <>
-                    <div>{q.answers}</div>
+                <div key={i}>  
+                    <Row style={{fontSize: '1.2em', fontWeight: 'bold'}} className="m-2">Odpowiedź użytkownika: </Row>
+                    <Row style={{fontSize: '1.0em'}} className="m-2">{q.answers}</Row>
+                    <hr/>
                     <div className="form-check" key={"evaluation" + i}>
                         <div>
                             <label className="form-check-label">
@@ -78,7 +79,7 @@ const Evaluation = props => {
                                     name={i}
                                     value="false"
                                 />
-                                0
+                                Odpowiedź niepoprawna ❌
                             </label>
                         </div>
                         <div>
@@ -90,11 +91,11 @@ const Evaluation = props => {
                                     name={i}
                                     value="true"
                                 />
-                                1
+                                Odpowiedź poprawna ✔️
                             </label>
                         </div>
                     </div>
-                </>
+                </div>
             )
             return (
                 <div className="card mb-3" key={"question" + i}>

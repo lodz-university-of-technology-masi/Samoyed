@@ -3,6 +3,7 @@ import SolvedTest from "./SolvedTest/SolvedTest";
 import { useSelector } from "react-redux";
 import "./SolvedTestsPanel.css";
 import { Button, Row, Col } from "react-bootstrap";
+import { withRouter } from "react-router";
 
 const SolvedTestPanel = props => {
 
@@ -34,7 +35,7 @@ const SolvedTestPanel = props => {
                 key={i}
                 solvedOn={test.solvedOn}
                 solvedBy={test.solvedBy}
-                isEvaluated={test.isEvaluated}
+                isEvaluated={test.evaluated}
                 id={test.id}
                 versions={test.versions}
                 exportCSV={() => exportCSV(test.id)}
@@ -60,4 +61,4 @@ const SolvedTestPanel = props => {
   );
 };
 
-export default SolvedTestPanel;
+export default withRouter(SolvedTestPanel);

@@ -20,6 +20,10 @@ const SolvedTests = React.lazy(() => {
   return import("../pages/SolvedTests/SolvedTests");
 });
 
+const SolvedTestsView = React.lazy(() => {
+  return import("../pages/SolvedTestView/SolvedTestView");
+});
+
 const TestLoader = React.lazy(() => {
   return import("../pages/TestLoader/TestLoader");
 });
@@ -65,7 +69,16 @@ const Routes = props => {
           exact
           render={props => <TestView {...props} />}
         />
-        <Route path="/solvedtests" exact render={props => <SolvedTests {...props} />} />
+        <Route
+          path="/solvedtests/:id"
+          exact
+          render={props => <SolvedTestsView {...props} />}
+        />
+        <Route
+          path="/solvedtests"
+          exact
+          render={props => <SolvedTests {...props} />}
+        />
         <Route
           path="/evaluate/:id"
           exact

@@ -49,7 +49,7 @@ const SolvedTest = props => {
 
 	const renderCandidatesButtons = () => {
 		return (
-			<Link>
+			<Link to={`/solvedtests/${id}`}>
 				<button className="btn btn-primary mr-1">Obejrzyj</button>
 			</Link>
 		);
@@ -85,7 +85,7 @@ const SolvedTest = props => {
 			</td>
 			<td align="center">{new Date(solvedOn).toLocaleDateString()}</td>
 			<td align="center">{getUser(solvedBy)}</td>
-			<td align="center">{isEvaluated}</td>
+			<td align="center">{isEvaluated ? "✔️" : "❌"}</td>
 			<td width="26%" align="center">
 				<div className="table__content">
 					{userGroup === "recruiters"
