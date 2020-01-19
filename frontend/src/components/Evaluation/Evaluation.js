@@ -116,10 +116,14 @@ const Evaluation = props => {
   return loaded ? (
     <>
       {viewVersion >= 0 ? (
-        <div className="form-inline">
-          <h1 className="ml-3">{versions[0].title}</h1>
-          <h1>Wersja językowa: {versions[0].lang}</h1>
-        </div>
+        <>
+          <Row>
+            <h1>{versions[0].title}</h1>
+          </Row>
+          <Row className="mb-4">
+            <h4>Wersja językowa: {versions[0].lang}</h4>
+          </Row>
+        </>
       ) : (
         ""
       )}
