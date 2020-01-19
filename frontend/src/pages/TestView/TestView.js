@@ -44,6 +44,7 @@ const TestView = props => {
     let lang = "";
     viewVersion === 0 ? (lang = "PL") : (lang = "EN");
     let answerSheet = {
+      title: versions[viewVersion].title,
       lang: lang,
       answers: answers
     };

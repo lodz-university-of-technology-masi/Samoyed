@@ -152,7 +152,9 @@ const TestCreate = props => {
       }
       setLoaded(true);
     }
-  });
+  },[]);
+
+
 
   // Data handlers //
 
