@@ -257,6 +257,8 @@ const TestCreate = props => {
     let test = {
       versions: []
     };
+
+    let proper = true;
     // Add versions
     for (let v in questions) {
       if (title[v].length > 0) {
@@ -265,9 +267,18 @@ const TestCreate = props => {
         test.versions[n].lang = v;
         test.versions[n].title = title[v];
         test.versions[n].questions = questions[v].map(q => {
+          if(q.content === "") {
+            proper = false;
+            return false;
+          }
           if (q.type === "W") {
             // Format all choice answers into single string
             let answers = q.answers.map(a => {
+              if(a.value === ""){
+                proper = false;
+                return false;
+              }
+
               return a.value + ";;" + a.correct;
             });
             answers = answers.join("|");
@@ -277,6 +288,13 @@ const TestCreate = props => {
         });
       }
     }
+
+    if(!proper) {
+      window.alert("Uzupełnij wszystkie pola.")
+      return ;
+    }
+
+
     setUploading(true);
     if (props.edited === undefined) {
       apiRequest({
