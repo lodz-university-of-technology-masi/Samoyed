@@ -46,19 +46,18 @@ export default function TestView(props) {
       lang: lang,
       answers: answers
     };
-    // apiRequest({
-    //   method: "POST",
-    //   path: "tests/solve/" + params.id,
-    //   body: answerSheet,
-    //   success: function(res) {
-    //     console.log(res);
-    //   },
-    //   error: function(err) {
-    //     console.log(err);
-    //     // ??
-    //   }
-    // });
-    console.log(answerSheet);
+    apiRequest({
+      method: "POST",
+      path: "tests/solve/" + params.id,
+      body: answerSheet,
+      success: function(res) {
+        console.log(res);
+      },
+      error: function(err) {
+        console.log(err);
+        // ??
+      }
+    });
   }
 
   // Renders all the divs containing different types of questions
