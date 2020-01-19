@@ -80,7 +80,7 @@ const SolvedTest = props => {
 		<tr>
 			<td>
 				{versions.map((v, j) => {
-					return <div key={j}>{"[" + v.lang + "] " + v.title}</div>;
+					return <div key={j}>{v.title}</div>;
 				})}
 			</td>
 			<td align="center">{new Date(solvedOn).toLocaleDateString()}</td>

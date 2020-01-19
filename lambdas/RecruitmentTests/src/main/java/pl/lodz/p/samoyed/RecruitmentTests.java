@@ -240,10 +240,12 @@ public class RecruitmentTests {
                         Test t = mapper.load(Test.class, testId);
                         List<Question> questions = prepareQuestions(om.readValue(req.getBody(), Answers.class), t.getVersions());
 
+                        String title = om.readValue(req.getBody(), Answers.class).getTitle();
+
                         SolvedTestContent solvedTestContent = new SolvedTestContent();
                         solvedTestContent.setQuestions(questions);
                         solvedTestContent.setEvaluations(null);
-                        solvedTestContent.setTitle(null);
+                        solvedTestContent.setTitle(title);
 
                         List<SolvedTestContent> versions = new LinkedList<>();
                         versions.add(solvedTestContent);

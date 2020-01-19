@@ -8,8 +8,19 @@ import java.util.List;
 @DynamoDBDocument
 public class Answers {
 
+
+
+    private String title;
     private String lang;
     private List<String> answers;
+
+    @DynamoDBAttribute(attributeName = "title")
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @DynamoDBAttribute(attributeName = "answers")
     public List<String> getAnswers() {

@@ -87,7 +87,7 @@ const TestView = props => {
                   className="form-check-input"
                   type="radio"
                   name={i}
-                  value={n}
+                  value={answers[n].split(";;")[0]}
                 />
                 {answers[n].split(";;")[0]}
               </label>
