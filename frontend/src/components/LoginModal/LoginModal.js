@@ -7,6 +7,7 @@ import { userLogIn } from "../../redux/actions/userLogIn";
 import { userLogOut } from "../../redux/actions/userLogOut";
 import { withRouter } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import ErrorModal from "../ErrorModal/ErrorModal";
 
 function LoginModal(props) {
   const dispatch = useDispatch();
@@ -16,7 +17,8 @@ function LoginModal(props) {
     login: "",
     password: ""
   });
-
+  const [error, setError] = useState(false);
+  const [errorData, setErrorData] = useState({ msg: "", status: "" });
   const [mode, setMode] = useState("signin");
 
   function handleChange(e) {
@@ -27,7 +29,7 @@ function LoginModal(props) {
 
   function logIn(e) {
     setIsLoading(true);
-    if(mode === 'signin'){
+    if (mode === "signin") {
       apiRequest({
         method: "POST",
         path: `user/${mode}/`,
@@ -43,7 +45,11 @@ function LoginModal(props) {
         },
         error: function(err) {
           setIsLoading(false);
-          alert("SOMETHING IS NOT QUITE RIGHT...");
+          setError(true);
+          setErrorData({
+            msg: JSON.parse(err.response).error,
+            status: err.status
+          });
           // ??
         }
       });
@@ -55,15 +61,22 @@ function LoginModal(props) {
           email: user.login,
           password: user.password
         },
-        success: function(res){
-          props.history.push('/')
+        success: function(res) {
+          setIsLoading(false);
+          props.history.push("/");
         },
-        error: function(err){
+        error: function(err) {
           console.log(err);
+          setError(true);
+          setErrorData({
+            msg: JSON.parse(err.responseText).error,
+            status: err.status
+          });
+          setIsLoading(false);
         }
-      })
+      });
     }
-    
+
     e.preventDefault();
   }
 
@@ -72,75 +85,97 @@ function LoginModal(props) {
     e.preventDefault();
   }
 
+  const handleClose = () => {
+    setError(false);
+    setIsLoading(false);
+  };
+
   const handleModeChange = () => {
     mode === "signin" ? setMode("signup") : setMode("signin");
   };
 
   return (
-    <div className="wrapper fadeInDown">
-      <div id="formContent">
-        <h2>{mode === "signin" ? `Logowanie` : `Rejestracja`}</h2>
-        <div className="fadeIn first">
-          <img
-            alt="person icon"
-            src="https://img.icons8.com/pastel-glyph/64/000000/person-male.png"
-          />
-        </div>
+    <>
+      <ErrorModal
+        err={error}
+        click={handleClose}
+        status={errorData.status}
+        msg={errorData.msg}
+      />
 
-        {loggedUser.isLogged ? (
-          <form>
-            Zalogowano jako <b>{loggedUser.data.email}</b>
-            <input
-              type="submit"
-              className="fadeIn fourth"
-              value="Wyloguj się"
-              onClick={logOut}
+      <div className="wrapper fadeInDown">
+        <div id="formContent">
+          <h2>{mode === "signin" ? `Logowanie` : `Rejestracja`}</h2>
+          <div className="fadeIn first">
+            <img
+              alt="person icon"
+              src="https://img.icons8.com/pastel-glyph/64/000000/person-male.png"
             />
-          </form>
-        ) : (
-          <form>
-            {isLoading ? (
-              <Loader size="100px">
-                <h4>Logowanie...</h4>
-              </Loader>
-            ) : (
-              <>
-                <input
-                  type="text"
-                  id="login"
-                  className="fadeIn second"
-                  name="login"
-                  placeholder="Login"
-                  value={user.login}
-                  onChange={handleChange}
-                />
-                <input
-                  type="password"
-                  id="password"
-                  className="fadeIn third"
-                  name="password"
-                  placeholder="Hasło"
-                  value={user.password}
-                  onChange={handleChange}
-                />
-                <input
-                  type="submit"
-                  className="fadeIn fourth"
-                  value={mode === "signin" ? `Zaloguj się` : `Zarejestruj się`}
-                  onClick={logIn}
-                />
-              </>
-            )}
-          </form>
-        )}
+          </div>
 
-        <div id="formFooter">
-          <Button size="sm" className="registration" onClick={handleModeChange}>
-            {mode === "signin" ? `Zarejestruj sie` : `Zaloguj się`}
-          </Button>
+          {loggedUser.isLogged ? (
+            <form>
+              Zalogowano jako <b>{loggedUser.data.email}</b>
+              <input
+                required
+                type="submit"
+                className="fadeIn fourth"
+                value="Wyloguj się"
+                onClick={logOut}
+              />
+            </form>
+          ) : (
+            <form>
+              {isLoading ? (
+                <Loader size="100px">
+                  <h4>Logowanie...</h4>
+                </Loader>
+              ) : (
+                <>
+                  <input
+                    required
+                    type="text"
+                    id="login"
+                    className="fadeIn second"
+                    name="login"
+                    placeholder="Login"
+                    value={user.login}
+                    onChange={handleChange}
+                  />
+                  <input
+                    required
+                    type="password"
+                    id="password"
+                    className="fadeIn third"
+                    name="password"
+                    placeholder="Hasło"
+                    value={user.password}
+                    onChange={handleChange}
+                  />
+                  <input
+                    type="submit"
+                    className="fadeIn fourth"
+                    value={
+                      mode === "signin" ? `Zaloguj się` : `Zarejestruj się`
+                    }
+                    onClick={logIn}
+                  />
+                </>
+              )}
+            </form>
+          )}
+          <div id="formFooter">
+            <Button
+              size="sm"
+              className="registration"
+              onClick={handleModeChange}
+            >
+              {mode === "signin" ? `Zarejestruj sie` : `Zaloguj się`}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
