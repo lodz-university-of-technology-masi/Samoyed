@@ -5,7 +5,6 @@ import Loader from "../../components/UI/Loader/Loader";
 export default function TestView(props) {
   const [params] = useState({ ...props.match.params });
   const [loaded, setLoaded] = useState(false);
-  const [id, setId] = useState("");
   const [versions, setVersions] = useState([]);
   const [viewVersion, setViewVersion] = useState(-1);
   const [answers, setAnswers] = useState([]);
@@ -17,7 +16,6 @@ export default function TestView(props) {
       path: "tests/id/" + params.id,
       success: function(res) {
         let test = JSON.parse(res.responseText);
-        setId(test.id);
         setVersions(test.versions);
         setViewVersion(0);
         setLoaded(true);
@@ -40,8 +38,8 @@ export default function TestView(props) {
   }
 
   function send(e) {
-    let lang = ''
-    viewVersion === 0 ? lang = "PL" : lang = "EN";
+    let lang = "";
+    viewVersion === 0 ? (lang = "PL") : (lang = "EN");
     let answerSheet = {
       lang: lang,
       answers: answers
@@ -131,7 +129,11 @@ export default function TestView(props) {
         <div className="form-inline">
           <select className="form-control" onChange={changeVersion}>
             {versions.map((v, i) => {
-              return <option key={i} value={i}>{v.lang}</option>;
+              return (
+                <option key={i} value={i}>
+                  {v.lang}
+                </option>
+              );
             })}
           </select>
           <h1 className="ml-3">{versions[viewVersion].title}</h1>

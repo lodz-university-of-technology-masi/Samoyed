@@ -1,4 +1,4 @@
-import { httpGet, detectLang, dictionaryKey } from "./DictionaryMethods";
+import { httpGet, dictionaryKey } from "./DictionaryMethods";
 
 //possible languages
 //"ru","en","pl","uk","de","fr","es","it","tr"
