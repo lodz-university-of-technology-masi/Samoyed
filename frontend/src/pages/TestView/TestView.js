@@ -40,22 +40,25 @@ export default function TestView(props) {
   }
 
   function send(e) {
+    let lang = ''
+    viewVersion === 0 ? lang = "PL" : lang = "EN";
     let answerSheet = {
-      lang: "PL",
+      lang: lang,
       answers: answers
     };
-    apiRequest({
-      method: "POST",
-      path: "tests/solve/" + params.id,
-      body: answerSheet,
-      success: function(res) {
-        console.log(res);
-      },
-      error: function(err) {
-        console.log(err);
-        // ??
-      }
-    });
+    // apiRequest({
+    //   method: "POST",
+    //   path: "tests/solve/" + params.id,
+    //   body: answerSheet,
+    //   success: function(res) {
+    //     console.log(res);
+    //   },
+    //   error: function(err) {
+    //     console.log(err);
+    //     // ??
+    //   }
+    // });
+    console.log(answerSheet);
   }
 
   // Renders all the divs containing different types of questions
