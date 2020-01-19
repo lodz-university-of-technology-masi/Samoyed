@@ -28,11 +28,13 @@ public class RecruitmentTests {
             .withRequestData(input)
             .withHandler((Request req, Response res) -> {
                 res.headers.put("Content-type", "application/json");
+                List<Assignment> asses = new LinkedList<>();
                 UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                 if (user.getGroups().contains("recruiters")) {
                     Test test = om.readValue(req.getBody(), Test.class);
                     test.setAuthor(user.getUserId());
                     test.setCreatedOn(System.currentTimeMillis());
+                    test.setAssignments(asses);
                     mapper.save(test);
                     res.body = om.writeValueAsString(test);
                     res.statusCode = 201;

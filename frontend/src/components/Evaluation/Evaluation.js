@@ -69,26 +69,30 @@ const Evaluation = props => {
                 <>
                     <div>{q.answers}</div>
                     <div className="form-check" key={"evaluation" + i}>
-                        <label className="form-check-label">
-                            <input
-                                onChange={evaluateAnswer}
-                                className="form-check-input"
-                                type="radio"
-                                name={i}
-                                value="false"
-                            />
-                            0
-                        </label>
-                        <label className="form-check-label">
-                            <input
-                                onChange={evaluateAnswer}
-                                className="form-check-input"
-                                type="radio"
-                                name={i}
-                                value="true"
-                            />
-                            1
-                        </label>
+                        <div>
+                            <label className="form-check-label">
+                                <input
+                                    onChange={evaluateAnswer}
+                                    className="form-check-input"
+                                    type="radio"
+                                    name={i}
+                                    value="false"
+                                />
+                                0
+                            </label>
+                        </div>
+                        <div>
+                            <label className="form-check-label">
+                                <input
+                                    onChange={evaluateAnswer}
+                                    className="form-check-input"
+                                    type="radio"
+                                    name={i}
+                                    value="true"
+                                />
+                                1
+                            </label>
+                        </div>
                     </div>
                 </>
             )
