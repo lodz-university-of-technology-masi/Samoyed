@@ -308,17 +308,43 @@ public class RecruitmentTests {
                 .withHandler((Request req, Response res) -> {
                     UserIdentity user = new UserIdentity(req.getCognitoIdToken());
                     om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                    DynamoDBScanExpression exp = new DynamoDBScanExpression()
-                            .withFilterExpression("solvedBy = :user")
-                            .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
-                    List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
-                    for (SolvedTest t : solvedTests) {
-                        for (SolvedTestContent tc : t.getVersions()) {
-                            tc.setQuestions(null);
-                            tc.setEvaluations(null);
+                    if (user.getGroups().contains("recruiters")) {
+                        DynamoDBScanExpression exp = new DynamoDBScanExpression()
+                                .withFilterExpression("Author = :user")
+                                .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
+                        List<Test> tests = mapper.scan(Test.class, exp);
+
+                        DynamoDBScanExpression expSolved = new DynamoDBScanExpression();
+                        List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, expSolved);
+
+                        List<SolvedTest> solvedTestsForRecruiter = new LinkedList<>();
+
+                        for (Test t : tests) {
+                            for (SolvedTest st : solvedTests) {
+                                if(st.getTestId() == null) continue;
+                                if(t.getId().equals(st.getTestId())) {
+                                    solvedTestsForRecruiter.add(st);
+                                }
+                            }
                         }
+
+                        res.body = om.writeValueAsString(solvedTestsForRecruiter);
                     }
-                    res.body = om.writeValueAsString(solvedTests);
+
+                    if(user.getGroups().contains("candidates")) {
+                        DynamoDBScanExpression exp = new DynamoDBScanExpression()
+                                .withFilterExpression("solvedBy = :user")
+                                .addExpressionAttributeValuesEntry(":user", new AttributeValue(user.getUserId()));
+                        List<SolvedTest> solvedTests = mapper.scan(SolvedTest.class, exp);
+                        for (SolvedTest t : solvedTests) {
+                            for (SolvedTestContent tc : t.getVersions()) {
+                                tc.setQuestions(null);
+                                tc.setEvaluations(null);
+                            }
+                        }
+                        res.body = om.writeValueAsString(solvedTests);
+                    }
+
                     res.headers.put("Content-type", "application/json");
                 }).handle();
 
