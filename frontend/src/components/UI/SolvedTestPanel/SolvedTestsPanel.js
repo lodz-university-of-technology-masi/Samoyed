@@ -20,8 +20,9 @@ const SolvedTestPanel = props => {
         <thead>
           <tr>
             <th>Tytuł</th>
-            <th>Data rozwiązania:</th>
-            <th>Rozwiązane przez:</th>
+            <th>Data rozwiązania</th>
+            <th>Rozwiązane przez</th>
+            <th>Czy oceniony</th>
             <th>Akcje</th>
           </tr>
         </thead>
@@ -33,6 +34,7 @@ const SolvedTestPanel = props => {
                 key={i}
                 solvedOn={test.solvedOn}
                 solvedBy={test.solvedBy}
+                isEvaluated={test.isEvaluated}
                 id={test.id}
                 versions={test.versions}
                 exportCSV={() => exportCSV(test.id)}

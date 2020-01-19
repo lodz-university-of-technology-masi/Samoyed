@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { DropdownButton, Dropdown, Col, Row } from "react-bootstrap";
 import "./SolvedTest.css";
@@ -12,11 +12,12 @@ const SolvedTest = props => {
 		solvedBy,
 		id,
 		versions,
+		isEvaluated,
 		exportCSV,
 		userGroup,
 	} = props;
 
-	const getUser = (userId) => {
+	useEffect(() => {
 		apiRequest({
 			method: "GET",
 			path: "fetchAllCandidates",
@@ -27,6 +28,9 @@ const SolvedTest = props => {
 				console.log(err);
 			}
 		});
+	}, []);
+
+	const getUser = (userId) => {
 		if (users !== undefined) {
 			return users.map(user => {
 			  let attributes = user.attributes;
@@ -38,9 +42,7 @@ const SolvedTest = props => {
 			  });
 			  if (id.value === userId) {
 				return email.value;
-			  } else {
-				return null;
-			  }
+			  } else return null;
 			});
 		  }
 	}
@@ -83,6 +85,7 @@ const SolvedTest = props => {
 			</td>
 			<td align="center">{new Date(solvedOn).toLocaleDateString()}</td>
 			<td align="center">{getUser(solvedBy)}</td>
+			<td align="center">{isEvaluated}</td>
 			<td width="26%" align="center">
 				<div className="table__content">
 					{userGroup === "recruiters"
@@ -90,6 +93,7 @@ const SolvedTest = props => {
 						: renderCandidatesButtons()}
 				</div>
 			</td>
+			
 		</tr>
 	);
 };
