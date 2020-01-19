@@ -2,6 +2,7 @@ import React, { useState, useEffect, version } from "react";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
 import { Row } from "react-bootstrap";
+import { withRouter } from "react-router";
 
 const Evaluation = props => {
   const [params] = useState({ ...props.match.params });
@@ -48,7 +49,7 @@ const Evaluation = props => {
       path: "SolvedTestEvaluation/id/" + params.id,
       body: evaluationSheet,
       success: function(res) {
-        console.log(res);
+        props.history.push('/solvedtests');
       },
       error: function(err) {
         console.log(err);
@@ -139,4 +140,6 @@ const Evaluation = props => {
   );
 };
 
-export default Evaluation;
+
+
+export default withRouter(Evaluation);
