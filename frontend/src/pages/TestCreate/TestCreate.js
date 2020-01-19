@@ -7,8 +7,9 @@ import { withRouter } from "react-router-dom";
 import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import Questions from "../../components/Questions/Questions";
 import translate from "../../Languages/Translator";
-import { Button } from "react-bootstrap";
-import { Popover } from 'react-text-selection-popover';
+import { Button, Row, Col } from "react-bootstrap";
+import monitorSynonyms from "../../Languages/Synonyms";
+import "./TestCreate.css";
 
 const TestCreate = props => {
   const history = useHistory();
@@ -365,7 +366,23 @@ const TestCreate = props => {
       e.target.selectionStart,
       e.target.selectionEnd
     );
-    setSynonym(selectedVal);
+    setSynonym(monitorSynonyms(selectedVal, version.toLowerCase()));
+  };
+
+  const renderSynonyms = () => {
+    let synonyms = [];
+    if (synonym.length < 2) {
+      synonyms.push(<p className="m-0 synonyms__paragraph">{synonym}</p>);
+    } else {
+      synonym.forEach((s, i) => {
+        synonyms.push(
+          <p key={i} className="m-0 synonyms__paragraph">
+            {i + 1}. {s}
+          </p>
+        );
+      });
+    }
+    return synonyms;
   };
 
   const translateTest = ver => {
@@ -503,6 +520,7 @@ const TestCreate = props => {
         </div>
         <div className="form-group row">
           <input
+            onMouseUp={e => handleMouseUp(e)}
             className="form-control"
             placeholder="Tytuł"
             onChange={e => changeTitleCreation(e)}
@@ -523,6 +541,20 @@ const TestCreate = props => {
           changeType={changeType}
           deleteQuestion={deleteQuestion}
         />
+        <Row className="p-0 synonyms__row">
+          <Col>
+            {synonym.length > 0 ? (
+              <>
+                <h4 className="synonyms__header">Proponowane synonimy:</h4>
+                {renderSynonyms()}
+              </>
+            ) : (
+              <h4 className="synonyms__header">
+                Zaznacz tekst, aby wyświetlić synonimy w języku {version}
+              </h4>
+            )}
+          </Col>
+        </Row>
         <div className="form-group row">
           <button
             className="btn btn-primary col-12 mb-2"
@@ -549,7 +581,6 @@ const TestCreate = props => {
             onFileLoaded={csvContent => readCSVFile(csvContent)}
           />
         </div>
-        <Popover>XD</Popover>
       </>
     );
   }

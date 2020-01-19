@@ -1,0 +1,17 @@
+.synonyms__paragraph{
+    font-size: 1.5em !important;
+}
+
+.synonyms__header{
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.synonyms__row{
+    background-color: rgba(248, 248, 248, 0.89) !important;
+    padding: 0.5em !important;
+    border-radius: 24px;
+    margin-bottom: 1.5rem !important;
+    margin-top: 0.5rem !important;
+    min-height: 240px;
+}
