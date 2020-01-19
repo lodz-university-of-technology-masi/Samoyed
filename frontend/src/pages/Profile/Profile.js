@@ -42,15 +42,11 @@ function Profile() {
 
   const updateProfile = () => {
     let profileData = {
-      given_name: "",
-      family_name: "",
-      gender: "",
-      email: ""
+      given_name: givenName,
+      family_name: familyName,
+      gender: gender,
+      email: state.data.email
     };
-    profileData.given_name = givenName;
-    profileData.family_name = familyName;
-    profileData.gender = gender;
-    profileData.email = state.data.email;
     apiRequest({
       method: "PUT",
       path: `updateProfile`,

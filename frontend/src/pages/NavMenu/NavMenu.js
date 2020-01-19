@@ -20,6 +20,9 @@ const NavMenu = props => {
         <LinkContainer to="/tests">
           <NavItem>Testy</NavItem>
         </LinkContainer>
+        <LinkContainer to="/solvedtests">
+          <NavItem>Rozwiązane testy</NavItem>
+        </LinkContainer>
         <LinkContainer to="/profile">
           <NavItem>Profil</NavItem>
         </LinkContainer>
