@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import apiRequest from "../../ApiRequest";
 import Loader from "../../components/UI/Loader/Loader";
+import { useHistory } from "react-router";
+import { withRouter } from "react-router-dom";
 
-export default function TestView(props) {
+const TestView = props => {
   const [params] = useState({ ...props.match.params });
+  const history = useHistory();
   const [loaded, setLoaded] = useState(false);
   const [id, setId] = useState("");
   const [versions, setVersions] = useState([]);
@@ -50,6 +53,7 @@ export default function TestView(props) {
       body: answerSheet,
       success: function(res) {
         console.log(res);
+        history.push("/solvedtests");
       },
       error: function(err) {
         console.log(err);
@@ -148,3 +152,5 @@ export default function TestView(props) {
     </Loader>
   );
 }
+
+export default withRouter(TestView);
