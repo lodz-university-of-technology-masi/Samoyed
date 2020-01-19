@@ -41,9 +41,9 @@ const Routes = props => {
 
   let routes = (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/team" component={Team} />
-      <Route path="/login" component={SignUp} />
+      <Route path="/" exact component={Home} />
+      <Route path="/team" exact component={Team} />
+      <Route path="/login" exact component={SignUp} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -52,31 +52,40 @@ const Routes = props => {
     routes = (
       <Switch>
         <Route path="/" exact component={Home} />
-        <Route path="/team" component={Team} />
-        <Route path="/tests" render={props => <Tests {...props} />} />
+        <Route path="/team" exact component={Team} />
+        <Route path="/tests" exact render={props => <Tests {...props} />} />
         <Route
           path="/test/create"
+          exact
           render={props => <TestCreate {...props} />}
         />
         <Route
           path="/test/edit/:id"
+          exact
           render={props => <TestLoader {...props} />}
         />
-        <Route path="/test/:id" render={props => <TestView {...props} />} />
+        <Route
+          path="/test/:id"
+          exact
+          render={props => <TestView {...props} />}
+        />
         <Route
           path="/solvedtests/:id"
+          exact
           render={props => <SolvedTestsView {...props} />}
         />
         <Route
           path="/solvedtests"
+          exact
           render={props => <SolvedTests {...props} />}
         />
         <Route
           path="/evaluate/:id"
+          exact
           render={props => <Evaluation {...props} />}
         />
-        <Route path="/profile" render={props => <Profile {...props} />} />
-        <Route path="/logout" component={Logout} />
+        <Route path="/profile" exact render={props => <Profile {...props} />} />
+        <Route path="/logout" exact component={Logout} />
         <Route component={NotFound} />
       </Switch>
     );
