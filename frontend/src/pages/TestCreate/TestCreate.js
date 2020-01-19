@@ -8,6 +8,7 @@ import ErrorModal from "../../components/ErrorModal/ErrorModal";
 import Questions from "../../components/Questions/Questions";
 import translate from "../../Languages/Translator";
 import { Button } from "react-bootstrap";
+import { Popover } from 'react-text-selection-popover';
 
 const TestCreate = props => {
   const history = useHistory();
@@ -21,38 +22,54 @@ const TestCreate = props => {
   const params = useParams();
   const [isValid, setIsValid] = useState(false);
   const [isTranslatable, setIsTranslatable] = useState(false);
+  const [synonym, setSynonym] = useState("");
 
   const checkValidity = () => {
     let validity = true;
     let translatable = false;
-    let modTitle = { ...title }
-    if((!modTitle["PL"] || 0 === modTitle["PL"].length) && (!modTitle["EN"] || 0 === modTitle["EN"].length)){
+    let modTitle = { ...title };
+    if (
+      (!modTitle["PL"] || 0 === modTitle["PL"].length) &&
+      (!modTitle["EN"] || 0 === modTitle["EN"].length)
+    ) {
       validity = false;
-    }
-    else if((!modTitle["PL"] || 0 === modTitle["PL"].length) && (!(!modTitle["EN"] || 0 === modTitle["EN"].length))){
+    } else if (
+      (!modTitle["PL"] || 0 === modTitle["PL"].length) &&
+      !(!modTitle["EN"] || 0 === modTitle["EN"].length)
+    ) {
       validity = checkQuestionsValidity("EN");
-    }
-    else if(!(!modTitle["PL"] || 0 === modTitle["PL"].length) && ((!modTitle["EN"] || 0 === modTitle["EN"].length))){
+    } else if (
+      !(!modTitle["PL"] || 0 === modTitle["PL"].length) &&
+      (!modTitle["EN"] || 0 === modTitle["EN"].length)
+    ) {
       validity = checkQuestionsValidity("PL");
     } else {
       validity = checkQuestionsValidity("PL") && checkQuestionsValidity("EN");
     }
-    if(version === "PL" && ((modTitle["PL"] !== '') && checkQuestionsValidity("PL"))){
+    if (
+      version === "PL" &&
+      modTitle["PL"] !== "" &&
+      checkQuestionsValidity("PL")
+    ) {
       translatable = true;
-    } else if (version === "EN" && ((modTitle["EN"] !== '') && checkQuestionsValidity("EN"))){
+    } else if (
+      version === "EN" &&
+      modTitle["EN"] !== "" &&
+      checkQuestionsValidity("EN")
+    ) {
       translatable = true;
     }
 
     setIsTranslatable(translatable);
     setIsValid(validity);
   };
- 
-  const checkQuestionsValidity = (lang) => {
-    let validity = true
+
+  const checkQuestionsValidity = lang => {
+    let validity = true;
     for (let i in questions[lang]) {
       if (
-        (questions[lang][i].content === "" ||
-        questions[lang][i].content === " ")
+        questions[lang][i].content === "" ||
+        questions[lang][i].content === " "
       ) {
         validity = false;
       }
@@ -64,12 +81,15 @@ const TestCreate = props => {
           )
             validity = false;
         });
-      } else if(questions[lang][i].answers === "" || questions[lang][i].answers === " ") {
+      } else if (
+        questions[lang][i].answers === "" ||
+        questions[lang][i].answers === " "
+      ) {
         validity = false;
       }
     }
-    return validity
-  }
+    return validity;
+  };
 
   useEffect(() => {
     if (!loaded) {
@@ -267,14 +287,14 @@ const TestCreate = props => {
         test.versions[n].lang = v;
         test.versions[n].title = title[v];
         test.versions[n].questions = questions[v].map(q => {
-          if(q.content === "") {
+          if (q.content === "") {
             proper = false;
             return false;
           }
           if (q.type === "W") {
             // Format all choice answers into single string
             let answers = q.answers.map(a => {
-              if(a.value === ""){
+              if (a.value === "") {
                 proper = false;
                 return false;
               }
@@ -289,11 +309,10 @@ const TestCreate = props => {
       }
     }
 
-    if(!proper) {
-      window.alert("Uzupełnij wszystkie pola.")
-      return ;
+    if (!proper) {
+      window.alert("Uzupełnij wszystkie pola.");
+      return;
     }
-
 
     setUploading(true);
     if (props.edited === undefined) {
@@ -340,20 +359,29 @@ const TestCreate = props => {
     setUploading(false);
   };
 
-  const translateTest = (ver) => {
+  const handleMouseUp = e => {
+    let val = e.target.value;
+    const selectedVal = val.substring(
+      e.target.selectionStart,
+      e.target.selectionEnd
+    );
+    setSynonym(selectedVal);
+  };
+
+  const translateTest = ver => {
     let desiredVersion;
-    ver === "PL" ? desiredVersion = "EN" : desiredVersion = "PL";
+    ver === "PL" ? (desiredVersion = "EN") : (desiredVersion = "PL");
     let newTitle;
-    if(desiredVersion === "EN"){
+    if (desiredVersion === "EN") {
       newTitle = {
         ...title,
         EN: translate(title[ver], desiredVersion.toLowerCase())
-      }
+      };
     } else {
       newTitle = {
         ...title,
         PL: translate(title[ver], desiredVersion.toLowerCase())
-      }
+      };
     }
     setTitle(newTitle);
     let translatedQuestions = { ...questions };
@@ -361,18 +389,27 @@ const TestCreate = props => {
       let translatedAnswers = [];
       if (translatedQuestions[ver][q].type === "W") {
         translatedQuestions[ver][q].answers.forEach((a, i) => {
-          const value = translate(translatedQuestions[ver][q].answers[i].value, desiredVersion.toLowerCase())
+          const value = translate(
+            translatedQuestions[ver][q].answers[i].value,
+            desiredVersion.toLowerCase()
+          );
           return translatedAnswers.push({
             ...a,
             value
           });
         });
       } else {
-        translatedAnswers = translate(translatedQuestions[ver][q].answers, desiredVersion.toLowerCase());
+        translatedAnswers = translate(
+          translatedQuestions[ver][q].answers,
+          desiredVersion.toLowerCase()
+        );
       }
       let t = {
         ...translatedQuestions[ver][q],
-        content: translate(translatedQuestions[ver][q].content, desiredVersion.toLowerCase()),
+        content: translate(
+          translatedQuestions[ver][q].content,
+          desiredVersion.toLowerCase()
+        ),
         answers: translatedAnswers
       };
       translatedQuestions[desiredVersion][q] = t;
@@ -456,7 +493,11 @@ const TestCreate = props => {
             <option value="EN">EN</option>
           </select>
           <label className="form-check-label ml-2">Wersja językowa</label>
-          <Button disabled={!isTranslatable} onClick={() => translateTest(version)} className="ml-auto">
+          <Button
+            disabled={!isTranslatable}
+            onClick={() => translateTest(version)}
+            className="ml-auto"
+          >
             Przetłumacz na {version === "PL" ? "EN" : "PL"}
           </Button>
         </div>
@@ -464,7 +505,7 @@ const TestCreate = props => {
           <input
             className="form-control"
             placeholder="Tytuł"
-            onChange={changeTitleCreation}
+            onChange={e => changeTitleCreation(e)}
             value={title[version]}
           />
           <small id="passwordHelpBlock" className="form-text text-muted">
@@ -473,6 +514,7 @@ const TestCreate = props => {
           </small>
         </div>
         <Questions
+          handleMouseUp={e => handleMouseUp(e)}
           questions={questions[version]}
           changeAnswersCorrectCreation={changeAnswersCorrectCreation}
           changeAnswersComplexCreation={changeAnswersComplexCreation}
@@ -488,14 +530,26 @@ const TestCreate = props => {
           >
             Dodaj pytanie
           </button>
-          <button as="input" type="submit" disabled={!isValid} className="btn btn-primary col-12" onClick={send}>
+          <button
+            as="input"
+            type="submit"
+            disabled={!isValid}
+            className="btn btn-primary col-12"
+            onClick={send}
+          >
             {isValid ? "Zapisz" : "Nie można wysłać niekompletnego formularza"}
           </button>
         </div>
 
         <div>
-          <CSVReader label="Importuj CSV" cssClass="form-group" cssInputClass="form-control-file" onFileLoaded={csvContent => readCSVFile(csvContent)} />
+          <CSVReader
+            label="Importuj CSV"
+            cssClass="form-group"
+            cssInputClass="form-control-file"
+            onFileLoaded={csvContent => readCSVFile(csvContent)}
+          />
         </div>
+        <Popover>XD</Popover>
       </>
     );
   }

@@ -1,6 +1,7 @@
 import React from 'react';
 
 const AnswersBlock = props => {
+    const { handleMouseUp } = props
     // Depending on question type, this renders different blocks for possible answers
     let answersBlock;
     if (props.q.type === "W") {
@@ -9,6 +10,7 @@ const AnswersBlock = props => {
         answersBlock.push(
           <>
             <input
+              onMouseUp={e => handleMouseUp(e)}
               className="form-check-input"
               type="checkbox"
               onChange={e => {
@@ -17,6 +19,7 @@ const AnswersBlock = props => {
               checked={props.q.answers[m].correct}
             />
             <input
+              onMouseUp={e => handleMouseUp(e)}
               required
               className="form-control mr-2"
               placeholder={"Odpowiedź " + (m + 1)}
@@ -36,6 +39,7 @@ const AnswersBlock = props => {
       return (
         <div className="form-group row">
           <input
+            onMouseUp={e => handleMouseUp(e)}
             required
             className="form-control"
             placeholder="Odpowiedzi"
