@@ -30,8 +30,8 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Authors
 
-Aleksandra Ruta
-Aleksandra Wnuk
-Marcin Dłubakowski
-Piotr Plichtowski
+Aleksandra Ruta,
+Aleksandra Wnuk,
+Marcin Dłubakowski,
+Piotr Plichtowski,
 Michał Kidawa (scrum master)
