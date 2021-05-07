@@ -19,7 +19,7 @@
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "sass": "^1.24.0",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   },
   "scripts": {
     "start": "react-scripts start",
